@@ -7,9 +7,8 @@ use ${basedir}/build/output/ASEC.dta;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SAMPLE SELECTION;
-* keep if educ>=111 & educ <.;
 drop if age < 18;
-* drop if incwage == 0 | incwage == .;
+drop if incwage == 0 | incwage == .;
 drop if hours == 0 | hours == .;
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTED LABOR INCOME SHARE;
@@ -21,6 +20,7 @@ label variable incshare "Share of Total Labor Income";
 
 * Adjustment variable (asecwt for population, asecwt*hours*52 for hours);
 gen adjustment = asecwt*hours*50;
+* gen adjustment = asecwt;
 
 * Population share by year (popshare);
 bysort year agecat: egen popgroup = sum(adjustment) if incwage;
@@ -37,26 +37,47 @@ label variable adj_incshare "Share of Total Labor Income, Adjusted";
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS;
+
 * Overlaid plots;
-collapse (mean) incshare popshare adj_incshare, by(year agecat);
-foreach i in 18 25 35 45 55 65 {;
-	local incplots `incplots' line incshare year if agecat == `i' ||;
-	local popplots `popplots' line popshare year if agecat == `i' ||;
-	local aincplots `aincplots' line adj_incshare year if agecat == `i' ||;
+scalar plots1 = 0;
+if plots1==1 {;
+	preserve;
+	collapse (mean) incshare popshare adj_incshare, by(year agecat);
+	foreach i in 18 25 35 45 55 65 {;
+		local incplots `incplots' line incshare year if agecat == `i' ||;
+		local popplots `popplots' line popshare year if agecat == `i' ||;
+		local aincplots `aincplots' line adj_incshare year if agecat == `i' ||;
+	};
+
+	local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
+
+	* Plots;
+	sort year;
+	cd ${basedir}/stats/output;
+	graph twoway `incplots', legend(order(`ages')) 
+		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+	graph export income_shares.png, replace;
+	graph twoway `popplots', legend(order(`ages')) 
+		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+	graph export pop_shares.png, replace;
+	graph twoway `aincplots', legend(order(`ages')) 
+		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+	graph export adj_income_shares.png, replace;
+	restore;
 };
+////////////////////////////////////////////////////////////////////////////////
+* Bar charts;
+* Group by year range and have separate bars for age groups;
+gen yearcat = 1 if year>=1976 & year<=1981;
+replace yearcat = 2 if year>=2012 & year<=2017;
+drop if yearcat==.;
+label define yearcatlabel 1 "1976-1981" 2 "2012-2017";
+label values yearcat yearcatlabel;
 
-local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
-
-* Plots;
-sort year;
+collapse (mean) adj_incshare, by(agecat yearcat);
+reshape wide adj_incshare, i(yearcat) j(agecat);
+graph bar adj_incshare25 adj_incshare65, over(yearcat) graphregion(color(white))
+	legend(label(1 "Ages 25-34") label(2 "Ages 65+"))
+	ytitle("Adjusted Share of Earnings");
 cd ${basedir}/stats/output;
-graph twoway `incplots', legend(order(`ages')) 
-	graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
-graph export income_shares.png, replace;
-graph twoway `popplots', legend(order(`ages')) 
-	graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
-graph export pop_shares.png, replace;
-graph twoway `aincplots', legend(order(`ages')) 
-	graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
-graph export adj_income_shares.png, replace;
-
+graph export bar.png, replace;
