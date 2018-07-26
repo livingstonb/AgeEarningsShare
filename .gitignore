@@ -1,0 +1,8 @@
+# File extensions
+*.dta
+*.pdf
+*.DS_Store
+
+# Directories
+**/input
+**/output
