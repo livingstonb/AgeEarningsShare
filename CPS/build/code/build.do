@@ -36,6 +36,6 @@ format date %tm;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COLLAPSE TO YEAR;
-collapse (mean) laborforce bachelors uhrsworkt month, by(date agecat);
+collapse (mean) laborforce bachelors uhrsworkt month sex, by(date agecat);
 save ${basedir}/build/output/cps_yearly.dta, replace;
 

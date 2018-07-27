@@ -7,10 +7,12 @@ global basedir /Users/Brian/Documents/GitHub/AgeEarningsShare/CPS;
 ////////////////////////////////////////////////////////////////////////////////
 use ${basedir}/build/output/cps_yearly.dta, clear;
 
-reshape wide laborforce bachelors uhrsworkt, i(date) j(agecat);
+reshape wide laborforce bachelors uhrsworkt sex, i(date) j(agecat);
+gen woman = (sex==0);
+replace woman = . if sex==.;
 
 foreach val of numlist 25 65 75 {;
-	local adjustvars laborforce uhrsworkt bachelors;
+	local adjustvars laborforce uhrsworkt bachelors women;
 	foreach adjustvar of local adjustvars  {;
 		reg `adjustvar'`val' i.month;
 		matrix coeffs = e(b);
@@ -46,3 +48,11 @@ twoway line bachelors25_adj bachelors65_adj bachelors75_adj date, graphregion(co
 	legend(span)
 	aspectratio(1);
 graph export ${basedir}/stats/output/college.png, replace;
+
+twoway line woman25_adj woman65_adj woman75_adj date, graphregion(color(white)) 
+	ytitle("Fraction of Group that are Women") xtitle("")
+	legend(label(1 "25-54 year olds") label(2 "65-74 year olds")
+		label(3 "75+ year olds"))
+	legend(span)
+	aspectratio(1);
+graph export ${basedir}/stats/output/women.png, replace;
