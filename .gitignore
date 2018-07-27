@@ -2,6 +2,7 @@
 *.dta
 *.pdf
 *.DS_Store
+*.txt
 
 # Directories
 **/input

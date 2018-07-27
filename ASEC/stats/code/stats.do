@@ -7,7 +7,6 @@ use ${basedir}/build/output/ASEC.dta;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SAMPLE SELECTION;
-keep if sex==1;
 drop if age < 18;
 drop if incwage == 0 | incwage == .;
 drop if hours == 0 | hours == .;
@@ -39,7 +38,7 @@ label variable adj_incshare "Share of Total Labor Income, Adjusted";
 * PLOTS;
 
 * Overlaid plots;
-scalar plots1 = 0;
+scalar plots1 = 1;
 if plots1==1 {;
 	preserve;
     duplicates drop year agecat, force;
