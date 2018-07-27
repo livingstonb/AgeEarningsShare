@@ -20,7 +20,7 @@ drop if hflag == 1;
 replace incwage = . if incwage == 9999998 | incwage == 9999999;
 replace educ = .	if educ == 999;
 replace	uhrsworkt = . if inlist(uhrsworkt,997,999);
-replace uhrsworkly = . if inlist(uhrsworkly,99,999);
+replace uhrsworkly = . if inlist(uhrsworkly,999);
 
 ////////////////////////////////////////////////////////////////////////////////
 * GENERATE NEW VARIABLES;
