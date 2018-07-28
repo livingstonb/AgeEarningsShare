@@ -9,7 +9,7 @@ use ${basedir}/build/output/ASEC.dta;
 * SAMPLE SELECTION;
 drop if age < 18;
 drop if incwage == 0 | incwage == .;
-drop if hours == 0 | hours == .;
+drop if uhrsworkly == 0 | uhrsworkly == .;
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTED LABOR INCOME SHARE;
 * Labor income shares by year (incshare);
@@ -18,7 +18,7 @@ by year: egen incyear = sum(asecwt*incwage);
 gen incshare = incgroup/incyear;
 label variable incshare "Share of Total Labor Income";
 
-* Adjustment variable (asecwt for population, asecwt*hours*50 for hours);
+* Adjustment variable (asecwt for population, asecwt*uhrsworkly*50 for hours);
 gen adjustment = asecwt;
 
 * Population share by year (popshare);
@@ -55,13 +55,19 @@ if plots1==1 {;
 	sort year;
 	cd ${basedir}/stats/output;
 	graph twoway `incplots', legend(order(`ages')) 
-		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+		graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
+		xtitle("") xlabel(1976(5)2017)
+		legend(region(lcolor(white)));
 	graph export income_shares.png, replace;
 	graph twoway `popplots', legend(order(`ages')) 
-		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+		graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
+		xtitle("") xlabel(1976(5)2017)
+		legend(region(lcolor(white)));
 	graph export pop_shares.png, replace;
 	graph twoway `aincplots', legend(order(`ages')) 
-		graphregion(color(white)) xlab(1980(10)2010) ylab(0(0.1)0.3);
+		graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
+		xtitle("") 
+		legend(region(lcolor(white)));
 	graph export adj_income_shares.png, replace;
 	restore;
 };
