@@ -2,7 +2,6 @@
 set more 1;
 cap mkdir ${basedir}/build/output;
 
-global basedir /Users/Brian/Documents/GitHub/AgeEarningsShare/CPS;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CLEAN DATA;
@@ -30,18 +29,14 @@ replace laborforce = 0 if labforce == 1;
 gen bachelors = 1 if (educ>=110) & (educ<.);
 replace bachelors = 0 if (educ>=2) & (educ<110);
 
-gen yyyym = string(year) + " m" + string(month);
-gen date = monthly(yyyym,"YM");
-format date %tm;
- 
-gen female = 1 if sex == 2;
-replace female = 0 if sex == 1;
+gen male = 1 if sex == 1;
+replace male = 0 if sex == 2;
 
 gen nonwhite = 1 if (race!=100) & (race!=.);
 replace nonwhite = 0 if race==100;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COLLAPSE TO MONTH AND YEAR;
-collapse (mean) laborforce bachelors uhrsworkt month female nonwhite [aw=wtfinl], by(date agecat);
+collapse (mean) laborforce bachelors uhrsworkt male nonwhite [aw=wtfinl], by(year agecat);
 save ${basedir}/build/output/cps_yearly.dta, replace;
 
