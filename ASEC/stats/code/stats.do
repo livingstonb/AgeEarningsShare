@@ -31,7 +31,9 @@ label variable popshare "Population Share";
 gen dpopshare2017 = popshare if year == 2017;
 egen popshare2017 = max(dpopshare2017);
 drop dpopshare2017;
-gen adj_incshare = incshare*popshare2017/popshare;
+bysort year agecat: egen adj_incgroup = sum(asecwt*incwage*popshare2017/popshare);
+by year: egen adj_incyear = sum(asecwt*incwage*popshare2017/popshare);
+gen adj_incshare = adj_incgroup/adj_incyear;
 label variable adj_incshare "Share of Total Labor Income, Adjusted";
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +76,7 @@ if plots1==1 {;
 ////////////////////////////////////////////////////////////////////////////////
 * Bar charts;
 * Group by year range and have separate bars for age groups;
-scalar plots2 = 1;
+scalar plots2 = 0;
 if plots2==1 {;
 	gen yearcat = 1 if year>=1976 & year<=1981;
 	replace yearcat = 2 if year>=2012 & year<=2017;
