@@ -655,6 +655,15 @@ rename headage 	age;
 rename spage 	agew;
 rename stateres state;
 
+gen agecat = 0;
+replace	agecat = 18 if (age>=18) & (age<25);
+replace agecat = 25 if (age>=25) & (age<35);
+replace agecat = 35 if (age>=35) & (age<45);
+replace agecat = 45 if (age>=45) & (age<55);
+replace agecat = 55 if (age>=55) & (age<65);
+replace agecat = 65 if (age>=65) & (age<.);
+replace agecat = . if age == .;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 * SAVE;
