@@ -67,7 +67,7 @@ if plots1==1 {;
 		legend(region(lcolor(white)));
 	graph export pop_shares.png, replace;
 	graph twoway `aincplots', legend(order(`ages')) 
-		graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
+		graphregion(color(white)) xlabel(1976(5)2017)
 		xtitle("") 
 		legend(region(lcolor(white)));
 	graph export adj_income_shares.png, replace;
