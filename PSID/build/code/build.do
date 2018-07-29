@@ -15,7 +15,7 @@ gen year = 1971;
 
 * Income;
 rename V1892 hwage;
-rename V1900 wwage;
+rename V1899 wwage;
 rename V1897 htotlabor;
 
 * Other variables;
@@ -647,6 +647,9 @@ replace headage = . if headage == 999 & year > 1995;
 replace spage = . if spage == 99 & year <= 1995;
 replace spage = . if spage == 999 & year > 1995;
 replace spage = . if spage == 0;
+
+replace hwage = . if hwage == 9999999 & (year==1995 | year==1997);
+replace wwage = . if inlist(wwage,9999998,9999999) & (year>=1995);
 
 rename headage 	age;
 rename spage 	agew;
