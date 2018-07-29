@@ -6,7 +6,6 @@ cap mkdir ${basedir}/stats/output;
 ////////////////////////////////////////////////////////////////////////////////
 use ${basedir}/build/output/cps_yearly.dta, clear;
 
-drop month;
 reshape wide laborforce bachelors uhrsworkt male nonwhite, i(year) j(agecat);
 
 twoway line laborforce25 laborforce65 laborforce75 year, graphregion(color(white)) 

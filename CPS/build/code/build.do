@@ -19,17 +19,16 @@ drop if classwkr == 26;
 
 ////////////////////////////////////////////////////////////////////////////////
 * GENERATE NEW VARIABLES;
-egen agecat = cut(age), at(18,25,65,75);
+egen agecat = cut(age), at(18,25,55,65,75);
 replace agecat = 75 if age >=75;
 drop if agecat == .;
 
 label define agecatlabel 18 "18-25 year olds" 25 "25-54 year olds"
-	65 "65-74" 75 "75+";
+	66 "55-64” 65 "65-74" 75 "75+";
 label values agecat agecatlabel;
 
 gen laborforce = 1 if labforce == 2;
 replace laborforce = 0 if labforce == 1;
-replace laborforce = . 
 
 gen bachelors = 1 if (educ>=110) & (educ<.);
 replace bachelors = 0 if (educ>=2) & (educ<110);
