@@ -35,7 +35,7 @@ label values agecat;
 
 gen agecbroad = 25 if age>=25 & age<=54;
 replace agecbroad = 55 if age>=55 & age<=64;
-replace agecbroad = 65 if age>=65 & age<=74;
+replace agecbroad = 65 if age>=65 & age<.;
 replace agecbroad = 0 if age<25;
 
 gen male = 1 if sex == 1;
