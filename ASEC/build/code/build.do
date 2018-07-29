@@ -33,14 +33,18 @@ label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 	65 "65+";
 label values agecat;
 
-gen agecatbroad = 25 if age>=25 & age<=54;
-replace agecatbroad = 65 if age>=65 & age<=74;
-replace agecatbroad = 75 if age>=75 & age<.;
+gen agecbroad = 25 if age>=25 & age<=54;
+replace agecbroad = 55 if age>=55 & age<=64;
+replace agecbroad = 65 if age>=65 & age<=74;
+replace agecbroad = 0 if age<25;
 
 gen male = 1 if sex == 1;
 replace male = 0 if sex == 2;
 
 gen nonwhite = 1 if race!=100 & race!=.;
 replace nonwhite = 0 if race==100;
+
+gen college = 1 if educ >= 110 & educ<.;
+replace college = 0 if educ < 110;
 
 save ${basedir}/build/output/ASEC.dta, replace;
