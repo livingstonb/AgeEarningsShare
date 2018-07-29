@@ -8,10 +8,10 @@ use ${basedir}/build/output/cps_yearly.dta, clear;
 
 reshape wide laborforce bachelors uhrsworkt male nonwhite, i(year) j(agecat);
 
-twoway line laborforce25 laborforce65 laborforce75 year, graphregion(color(white)) 
+twoway line laborforce25 laborforce65 laborforce75 laborforce55 year, graphregion(color(white)) 
 	ytitle("Labor Force Participation Rate") xtitle("")
 	legend(label(1 "25-54 year olds") label(2 "65-74 year olds")
-		label(3 "75+ year olds"))
+		label(3 "75+ year olds") label(4 "55-64"))
 	legend(span)
 	aspectratio(1)
 	xsize(3.5)

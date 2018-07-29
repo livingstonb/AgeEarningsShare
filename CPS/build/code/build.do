@@ -21,10 +21,10 @@ drop if classwkr == 26;
 * GENERATE NEW VARIABLES;
 egen agecat = cut(age), at(18,25,55,65,75);
 replace agecat = 75 if age >=75;
-drop if agecat == .;
+replace agecat = 0 if age<18;
 
 label define agecatlabel 18 "18-25 year olds" 25 "25-54 year olds"
-	66 "55-64” 65 "65-74" 75 "75+";
+	55 "55-64" 65 "65-74" 75 "75+";
 label values agecat agecatlabel;
 
 gen laborforce = 1 if labforce == 2;
@@ -40,7 +40,7 @@ gen nonwhite = 1 if (race!=100) & (race!=.);
 replace nonwhite = 0 if race==100;
 
 ////////////////////////////////////////////////////////////////////////////////
-* COLLAPSE TO MONTH AND YEAR;
+* COLLAPSE TO YEAR;
 
 collapse (mean) laborforce bachelors uhrsworkt male nonwhite [aw=wtfinl], by(year agecat);
 save ${basedir}/build/output/cps_yearly.dta, replace;
