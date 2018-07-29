@@ -2,200 +2,237 @@
 clear*;
 set maxvar 30000;
 set more 1;
+cap mkdir ${basedir}/build/temp;
+cap mkdir ${basedir}/build/output;
 
 /* Appends family datasets by year and performs basic data cleaning */;
 
 ////////////////////////////////////////////////////////////////////////////////
 * 1971;
 cd $basedir/build/input;
-use fam1971er/fam1971er.dta, clear;
+use fam1971/fam1971.dta, clear;
 gen year = 1971;
 
 * Income;
 rename V1892 hwage;
+rename V1900 wwage;
 rename V1897 htotlabor;
 
 * Other variables;
 rename V2321 wgt;
+rename V1942 headage;
+rename V1944 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1971er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1973;
 cd $basedir/build/input;
-use fam1973er/fam1973er.dta, clear;
+use fam1973/fam1973.dta, clear;
 gen year = 1973;
 
 * Income;
 rename V3046 hwage;
+rename V3053 wwage;
 rename V3051 htotlabor;
 
 * Other variables;
 rename V3301 wgt;
+rename V3095 headage;
+rename V3097 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1973er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1975;
 cd $basedir/build/input;
-use fam1975er/fam1975er.dta, clear;
+use fam1975/fam1975.dta, clear;
 gen year = 1975;
 
 * Income;
 rename V3858 hwage;
+rename V3865 wwage;
 rename V3863 htotlabor;
 
 * Other variables;
 rename V4224 wgt;
+rename V3921 headage;
+rename V3923 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1975er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1977;
 cd $basedir/build/input;
-use fam1977er/fam1977er.dta, clear;
+use fam1977/fam1977.dta, clear;
 gen year = 1977;
 
 * Income;
 rename V5283 hwage;
+rename V5289 wwage;
 rename V5627 htotlabor;
 
 * Other variables;
 rename V5665 wgt;
+rename V5350 headage;
+rename V5352  spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1977er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1979;
 cd $basedir/build/input;
-use fam1979er/fam1979er.dta, clear;
+use fam1979/fam1979.dta, clear;
 gen year = 1979;
 
 * Income;
 rename V6391 hwage;
+rename V6398 wwage;
 rename V6767 htotlabor;
 
 * Other variables;
 rename V6805 wgt;
+rename V6462 headage;
+rename V6464 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1979er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1981;
 cd $basedir/build/input;
-use fam1981er/fam1981er.dta, clear;
+use fam1981/fam1981.dta, clear;
 gen year = 1981;
 
 * Income;
 rename V7573 hwage;
+rename V7580 wwage;
 rename V8066 htotlabor;
 
 * Other variables;
 rename V8103 wgt;
+rename V7658 headage;
+rename V7660 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1981er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1983;
 cd $basedir/build/input;
-use fam1983er/fam1983er.dta, clear;
+use fam1983/fam1983.dta, clear;
 gen year = 1983;
 
 * Income;
 rename V8873 hwage;
+rename V8881 wwage;
 rename V9376 htotlabor;
 
 * Other variables;
 rename V9433 wgt;
+rename V8961 headage;
+rename V8963 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1983er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1985;
 cd $basedir/build/input;
-use fam1985er/fam1985er.dta, clear;
+use fam1985/fam1985.dta, clear;
 gen year = 1985;
 
 * Income;
 rename V11397 hwage;
+rename V11404 wwage;
 rename V12372 htotlabor;
 
 * Other variables;
 rename V12446 wgt;
+rename V11606 headage;
+rename V11608 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1985er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1987;
 cd $basedir/build/input;
-use fam1987er/fam1987er.dta, clear;
+use fam1987/fam1987.dta, clear;
 gen year = 1987;
 
 * Income;
 rename V13898 hwage;
+rename V13905 wwage;
 rename V14671 htotlabor;
 
 * Other variables;
 rename V14737 wgt;
+rename V14114 headage;
+rename V14116 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1987er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1989;
 cd $basedir/build/input;
-use fam1989er/fam1989er.dta, clear;
+use fam1989/fam1989.dta, clear;
 gen year = 1989;
 
 * Income;
 rename V16413 hwage;
+rename V16420 wwage;
 rename V17534 htotlabor;
 
 * Other variables;
 rename V17612 wgt;
+rename V16631 headage;
+rename V16633 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1989er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1991;
 cd $basedir/build/input;
-use fam1991er/fam1991er.dta, clear;
+use fam1991/fam1991.dta, clear;
 gen year = 1991;
 
 * Income;
 rename V19129 hwage;
+rename V19136 wwage;
 rename V20178 htotlabor;
 
 * Other variables;
 rename V20245 wgt;
+rename V19349 headage;
+rename V19351 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1991er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
 * 1993;
 cd $basedir/build/input;
-use fam1993er/fam1993er.dta, clear;
+use fam1993/fam1993.dta, clear;
 gen year = 1993;
 
 * Income;
 rename V21739 hwage;
-rename V22817 wwage; /* Need to convert from hourly */;
+rename V22817 wwage;
 rename V23323 htotlabor;
 
 * Other variables;
 rename V23363 wgt;
+rename V22406 headage;
+rename V22408 spage;
 
-drop ER*;
+drop V*;
 cd $basedir/build/temp;
 save fam1993er_temp, replace;
 ////////////////////////////////////////////////////////////////////////////////
@@ -206,11 +243,13 @@ gen year = 1995;
 
 * Income;
 rename ER6962 hwage;
-rename ER6480 wwage; /* Need to convert from hourly */;
+rename ER6480 wwage;
 rename ER6980 htotlabor;
 
 * Other variables;
 rename ER7000B wgt;
+rename ER5006 headage;
+rename ER5008 spage;
 
 drop ER*;
 cd $basedir/build/temp;
@@ -228,6 +267,8 @@ rename ER12080 htotlabor;
 
 * Other variables;
 rename ER12084 wgt;
+rename ER10009 headage;
+rename ER10011 spage;
 
 drop ER*;
 cd $basedir/build/temp;
@@ -586,7 +627,7 @@ local deflatevars	;
 * APPEND YEARS;
 cd $basedir/build/temp;
 use fam1999er_temp, clear;
-forvalues yrind = 2001(2)2015 {;
+forvalues yrind = 1971(2)2015 {;
 	append using fam`yrind'er_temp.dta;
 };
 
@@ -600,12 +641,20 @@ replace legaldebt 			= 0 if year <= 2009;
 
 gen trunchwage = 1 if inlist(hwage,999999,9999999);
 
+replace headage = . if headage == 99 & year <= 1995;
+replace headage = . if headage == 98 & year == 1995; 
+replace headage = . if headage == 999 & year > 1995;
+replace spage = . if spage == 99 & year <= 1995;
+replace spage = . if spage == 999 & year > 1995;
+replace spage = . if spage == 0;
+
 rename headage 	age;
 rename spage 	agew;
 rename stateres state;
 
+
 ////////////////////////////////////////////////////////////////////////////////
 * SAVE;
-cd $basedir/build/temp;
-save PSID_wealth1.dta, replace;
+cd $basedir/build/output;
+save PSID.dta, replace;
 
