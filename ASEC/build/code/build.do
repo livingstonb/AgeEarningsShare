@@ -3,8 +3,6 @@ clear;
 set more 1;
 cap mkdir ${basedir}/build/output;
 
-global basedir /Users/Brian/Documents/GitHub/AgeEarningsShare/ASEC;
-
 ////////////////////////////////////////////////////////////////////////////////
 * CLEAN DATA;
 * Read IPUMS data;
@@ -12,6 +10,9 @@ use ${basedir}/build/input/cps.dta;
 
 * Use only the ASEC data;
 keep if asecflag == 1;
+
+* Drop armed forces;
+drop if empstat == 1;
 
 * Discard redesigned 3/8th survey data from 2014;
 drop if hflag == 1;
