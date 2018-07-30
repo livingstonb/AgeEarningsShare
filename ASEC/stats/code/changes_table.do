@@ -3,6 +3,8 @@ clear;
 set more 1;
 cap mkdir ${basedir}/stats/output;
 
+/* This do-file computes income shares in 1976 and 2017 for comparison */;
+
 use ${basedir}/build/output/ASEC.dta;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -10,7 +12,7 @@ use ${basedir}/build/output/ASEC.dta;
 drop if age < 18;
 drop if incwage == 0 | incwage == .;
 keep if year == 1976 | year == 2017;
-* drop if uhrsworkly == 0 | uhrsworkly == .;
+
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTED LABOR INCOME SHARE;
 * Labor income shares by year (incshare);
@@ -35,5 +37,6 @@ foreach var of varlist incshare* {;
 };
 reshape wide incshare*, i(year) j(agecbroad);
 
+* Display in command window;
 li incshare????y25, clean noobs ab(30);
 li incshare????y65, clean noobs ab(30);

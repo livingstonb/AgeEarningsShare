@@ -1,31 +1,28 @@
 #delimit;
+clear;
 set more 1;
 cap mkdir ${basedir}/stats/output;
 
-/* Produces income share plots from PSID data by age */;
+/* This do-file plots income share and adjusted income share for each age group
+over the years 1976-2017 */;
 
-////////////////////////////////////////////////////////////////////////////////
-use ${basedir}/build/output/PSID.dta, clear;
-
-* Create new observations for spouses;
-expand 2 if (agew<.) | (wwage>0 & wwage<.), gen(newobs);
-gen labinc = hwage if newobs == 0;
-replace labinc = wwage if newobs == 1;
+use ${basedir}/build/output/ASEC.dta;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SAMPLE SELECTION;
-drop if age < 18 | agecat==.;
-drop if labinc == 0 | labinc == .;
+drop if age < 18;
+drop if incwage == 0 | incwage == .;
 
 ////////////////////////////////////////////////////////////////////////////////
+* ADJUSTED LABOR INCOME SHARE;
 * Labor income shares by year (incshare);
-bysort year agecat: egen incgroup = sum(wgt*labinc);
-by year: egen incyear = sum(wgt*labinc);
+bysort year agecat: egen incgroup = sum(asecwt*incwage);
+by year: egen incyear = sum(asecwt*incwage);
 gen incshare = incgroup/incyear;
 label variable incshare "Share of Total Labor Income";
 
-* Adjustment variable;
-gen adjustment = wgt;
+* Adjustment variable (asecwt for population, asecwt*uhrsworkly*50 for hours);
+gen adjustment = asecwt;
 
 * Population share by year (popshare);
 bysort year agecat: egen popgroup = sum(adjustment);
@@ -34,11 +31,11 @@ gen popshare = popgroup/popyear;
 label variable popshare "Population Share";
 
 * Adjusted labor income share by year (adj_incshare);
-gen dpopshare2015 = popshare if year == 2015;
-egen popshare2015 = max(dpopshare2015);
-drop dpopshare2015;
-bysort year agecat: egen adj_incgroup = sum(wgt*labinc*popshare2015/popshare);
-by year: egen adj_incyear = sum(wgt*labinc*popshare2015/popshare);
+gen dpopshare2017 = popshare if year == 2017;
+egen popshare2017 = max(dpopshare2017);
+drop dpopshare2017;
+bysort year agecat: egen adj_incgroup = sum(asecwt*incwage*popshare2017/popshare);
+by year: egen adj_incyear = sum(asecwt*incwage*popshare2017/popshare);
 gen adj_incshare = adj_incgroup/adj_incyear;
 label variable adj_incshare "Share of Total Labor Income, Adjusted";
 
@@ -58,19 +55,23 @@ local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 5
 * Plots;
 sort year;
 cd ${basedir}/stats/output;
+* Income share plot;
 graph twoway `incplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)));
 graph export income_shares.png, replace;
+
+* Population share plot;
 graph twoway `popplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)));
 graph export pop_shares.png, replace;
+
+* Adjusted income share plot;
 graph twoway `aincplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") 
 	legend(region(lcolor(white)));
 graph export adj_income_shares.png, replace;
-
