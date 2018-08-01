@@ -4,7 +4,7 @@ cap mkdir ${basedir}/build/output;
 
 /* This is the main do-file for the CPS Basic Survey */;
 
-global basedir /Users/Brian/Documents/GitHub/AgeEarningsShare/CPS;
+global basedir /Users/brianlivingston/Documents/GitHub/AgeEarningsShare/CPS;
 
 ////////////////////////////////////////////////////////////////////////////////
 * BUILD DIRECTORY;

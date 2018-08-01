@@ -2,7 +2,7 @@
 set more 1;
 cap mkdir ${basedir}/build/output;
 
-global basedir /Users/Brian/Documents/GitHub/AgeEarningsShare/ASEC;
+global basedir /Users/brianlivingston/Documents/GitHub/AgeEarningsShare/ASEC;
 
 /* This is the main do-file */;
 
