@@ -66,7 +66,7 @@ save ${basedir}/stats/output/gender_table.dta, replace;
 restore;
 
 ////////////////////////////////////////////////////////////////////////////////
-* DISPLAY IN COMMAND WINDOW
+* DISPLAY IN COMMAND WINDOW;
 use ${basedir}/stats/output/education_table, clear;
 li incshare????y25, clean noobs ab(30);
 li incshare????y65, clean noobs ab(30);
