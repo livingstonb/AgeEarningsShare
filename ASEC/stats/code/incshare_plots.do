@@ -9,9 +9,17 @@ over the years 1976-2017 */;
 use ${basedir}/build/output/ASEC.dta;
 
 ////////////////////////////////////////////////////////////////////////////////
-* SAMPLE SELECTION;
+* HOUSEKEEPING;
 drop if age < 18;
 drop if incwage == 0 | incwage == .;
+
+egen agecat = cut(age), at(18,25,35,45,55,65);
+replace agecat = 65 if age >=65;
+
+label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
+	35 "35-44 year olds" 45 "45-54 year olds" 55 "55-64 year olds"
+	65 "65+";
+label values agecat;
 
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTED LABOR INCOME SHARE;
