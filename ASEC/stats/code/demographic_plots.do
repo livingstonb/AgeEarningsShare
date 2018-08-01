@@ -10,6 +10,7 @@ use ${basedir}/build/output/ASEC.dta, clear;
 * HOUSEKEEPING;
 drop if age < 18;
 
+
 egen agecat = cut(age), at(18,25,55,65,75);
 replace agecat = 75 if age >=75;
 
