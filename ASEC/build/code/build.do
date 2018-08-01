@@ -26,18 +26,6 @@ replace race = . if race == 999;
 
 ////////////////////////////////////////////////////////////////////////////////
 * GENERATE NEW VARIABLES;
-egen agecat = cut(age), at(18,25,35,45,55,65);
-replace agecat = 65 if age >=65;
-
-label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
-	35 "35-44 year olds" 45 "45-54 year olds" 55 "55-64 year olds"
-	65 "65+";
-label values agecat;
-
-gen agecbroad = 25 if age>=25 & age<=54;
-replace agecbroad = 55 if age>=55 & age<=64;
-replace agecbroad = 65 if age>=65 & age<.;
-replace agecbroad = 0 if age<25;
 
 gen male = 1 if sex == 1;
 replace male = 0 if sex == 2;

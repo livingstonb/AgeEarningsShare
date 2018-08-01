@@ -7,10 +7,19 @@ cap mkdir ${basedir}/stats/output;
 use ${basedir}/build/output/ASEC.dta, clear;
 
 ////////////////////////////////////////////////////////////////////////////////
+* HOUSEKEEPING;
+drop if age < 18;
 
-drop if agecatbroad == .;
-collapse (mean) uhrsworkly male nonwhite [aw=asecwt], by(year agecatbroad);
-reshape wide uhrsworkly male nonwhite, i(year) j(agecatbroad);
+egen agecat = cut(age), at(18,25,55,65,75);
+replace agecat = 75 if age >=75;
+
+label define agecatlabel 18 "18-24 year olds" 25 "25-54 year olds"
+	55 "55-64 year olds" 65 "65-74 year olds" 75 "75+";
+label values agecat;
+
+////////////////////////////////////////////////////////////////////////////////
+collapse (mean) uhrsworkly male nonwhite [aw=asecwt], by(year agecat);
+reshape wide uhrsworkly male nonwhite, i(year) j(agecat);
 
 * Hours worked;
 twoway line uhrsworkly25 uhrsworkly65 uhrsworkly75 year, 
