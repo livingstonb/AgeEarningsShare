@@ -11,7 +11,8 @@ use ${basedir}/build/output/ASEC.dta;
 ////////////////////////////////////////////////////////////////////////////////
 * HOUSEKEEPING;
 drop if age < 18;
-drop if incwage == 0 | incwage == .;
+drop if incwage <= 0 | incwage == .;
+drop if topcode == 1;
 
 egen agecat = cut(age), at(18,25,35,45,55,65);
 replace agecat = 65 if age >=65;

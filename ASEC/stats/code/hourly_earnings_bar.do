@@ -10,7 +10,7 @@ use ${basedir}/build/output/ASEC.dta;
 ////////////////////////////////////////////////////////////////////////////////
 * HOUSEKEEPING;
 drop if age < 18;
-drop if incwage == 0 | incwage == .;
+drop if incwage <= 0 | incwage == .;
 keep if year == 1994 | year == 2017;
 drop if topcode == 1;
 
