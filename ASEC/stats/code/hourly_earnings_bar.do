@@ -12,7 +12,8 @@ use ${basedir}/build/output/ASEC.dta;
 drop if age < 18;
 drop if incwage <= 0 | incwage == .;
 keep if year == 1994 | year == 2017;
-drop if topcode == 1;
+* No need to drop top-coded observations since we're taking the median;
+* drop if topcode == 1;
 
 egen agecat = cut(age), at(18,25,55,65);
 replace agecat = 65 if age >=65;
