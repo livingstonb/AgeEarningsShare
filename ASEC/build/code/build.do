@@ -29,7 +29,7 @@ replace race = . if race == 999;
 gen topcode = 0;
 replace topcode = 1 if (incwage==50000) & (year>=1968) & (year<=1981);
 replace topcode = 1 if (incwage==75000) & (year>=1982) & (year<=1984);
-replace topcode = 1 if (incwage==99999) & (year>=1985) & (year>=1987);
+replace topcode = 1 if (incwage==99999) & (year>=1985) & (year<=1987);
 replace topcode = 1 if (incwage==199998) & (year>=1988) & (year<=1995);
 
 ////////////////////////////////////////////////////////////////////////////////

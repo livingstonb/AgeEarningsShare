@@ -39,6 +39,7 @@ graph bar rhourly_earnings1994 rhourly_earnings2017,
 	over(agecat,relabel(1 "18-24" 2 "25-54" 3 "55-64" 4 "65+"))
 	legend(label(1 "1994") label(2 "2017"))
 	ytitle("Median Real Hourly Earnings, 2017 Dollars")
+	legend(region(lcolor(white)))
 	graphregion(color(white));
 graph export ${basedir}/stats/output/hourly_earnings.png, replace;
 
