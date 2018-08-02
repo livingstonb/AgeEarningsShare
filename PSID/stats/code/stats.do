@@ -8,14 +8,14 @@ cap mkdir ${basedir}/stats/output;
 use ${basedir}/build/output/PSID.dta, clear;
 
 * Create new observations for spouses;
-expand 2 if (agew<.) | (wwage>0 & wwage<.), gen(newobs);
-gen labinc = hwage if newobs == 0;
-replace labinc = wwage if newobs == 1;
+expand 2 if (agew<.) | (wwage>0 & wwage<.), gen(spouse);
+gen labinc = hwage if spouse == 0;
+replace labinc = wwage if spouse == 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SAMPLE SELECTION;
-drop if age < 18 | agecat==.;
-drop if labinc == 0 | labinc == .;
+drop if (age<18 & spouse == 0) | (agew<18 & spouse == 1) | agecat==.;
+drop if labinc <= 0 | labinc == .;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Labor income shares by year (incshare);
