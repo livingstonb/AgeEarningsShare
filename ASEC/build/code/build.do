@@ -3,6 +3,8 @@ clear;
 set more 1;
 cap mkdir ${basedir}/build/output;
 
+/* This is the main do-file for the ASEC age-earnings share project */;
+
 ////////////////////////////////////////////////////////////////////////////////
 * CLEAN DATA;
 * Read IPUMS data;

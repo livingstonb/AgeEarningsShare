@@ -3,7 +3,7 @@ clear;
 set more 1;
 cap mkdir ${basedir}/stats/output;
 
-/* This do-file computes income shares in 1994 and 2017 for comparison */;
+/* This do-file compares hourly earnings in 1994 and 2017 with a bar chart */;
 
 use ${basedir}/build/output/ASEC.dta;
 

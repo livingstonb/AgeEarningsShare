@@ -2,6 +2,8 @@
 set more 1;
 cap mkdir ${basedir}/build/output;
 
+/* This file reads the monthly CPS dataset and exports a yearly dataset */;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 * CLEAN DATA;
