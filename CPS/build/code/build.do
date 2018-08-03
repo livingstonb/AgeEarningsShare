@@ -11,7 +11,7 @@ cap mkdir ${basedir}/build/output;
 use ${basedir}/build/input/cps.dta, clear;
 
 * Code missing values;
-replace educ = .	if educ == 999;
+replace educ = .	if inlist(1,999);
 replace	uhrsworkt = . if inlist(uhrsworkt,997,999);
 replace race = . if race == 999;
 
