@@ -11,7 +11,7 @@ use ${basedir}/build/output/ASEC.dta;
 ////////////////////////////////////////////////////////////////////////////////
 * HOUSEKEEPING;
 drop if age < 18;
-drop if incwage <= 0 | incwage == .;
+drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
 egen agecat = cut(age), at(18,25,35,45,55,65);
@@ -23,30 +23,41 @@ label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 label values agecat;
 
 ////////////////////////////////////////////////////////////////////////////////
-* ADJUSTED LABOR INCOME SHARE;
-* Labor income shares by year (incshare);
+* Unadjusted labor income shares by year (incshare);
 bysort year agecat: egen incgroup = sum(asecwt*incwage);
 by year: egen incyear = sum(asecwt*incwage);
 gen incshare = incgroup/incyear;
 label variable incshare "Share of Total Labor Income";
 
-* Adjustment variable (asecwt for population, asecwt*uhrsworkly*50 for hours);
-gen adjustment = asecwt;
-
-* Population share by year (popshare);
-bysort year agecat: egen popgroup = sum(adjustment);
-by year: egen popyear = sum(adjustment);
+* Population share by year;
+bysort year agecat: egen popgroup = sum(asecwt);
+by year: egen popyear = sum(asecwt);
 gen popshare = popgroup/popyear;
-label variable popshare "Population Share";
 
-* Adjusted labor income share by year (adj_incshare);
-gen dpopshare2017 = popshare if year == 2017;
-egen popshare2017 = max(dpopshare2017);
-drop dpopshare2017;
-bysort year agecat: egen adj_incgroup = sum(asecwt*incwage*popshare2017/popshare);
-by year: egen adj_incyear = sum(asecwt*incwage*popshare2017/popshare);
-gen adj_incshare = adj_incgroup/adj_incyear;
-label variable adj_incshare "Share of Total Labor Income, Adjusted";
+* Adjustment variables;
+gen population 	= asecwt;
+gen workers		= asecwt if incwage > 0;
+gen hoursly		= asecwt*uhrsworkly;
+local adjustments population workers hoursly;
+foreach adjustment of local adjustments {;
+
+	* Adjustment factor;
+	bysort year agecat: egen groupsum = sum(`adjustment');
+	by year: egen yearsum = sum(`adjustment');
+	gen groupshare = groupsum/yearsum;
+	drop groupsum yearsum;
+
+	* Adjusted labor income share by year (incshare_`adjustment');
+	bysort agecat: gen tempshare1976 = groupshare if year == 1976;
+	by agecat: egen share1976 = max(tempshare1976);
+	bysort year agecat: egen adj_incgroup = 
+		sum(asecwt*incwage*share1976/groupshare);
+	by year: egen adj_incyear = sum(asecwt*incwage*share1976/groupshare);
+	gen incshare_`adjustment' = adj_incgroup/adj_incyear;
+	label variable incshare_`adjustment' "Share of Total Labor Income, Adjusted";
+	drop tempshare1976 adj_incgroup adj_incyear groupshare share1976;
+	
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS;
@@ -56,7 +67,9 @@ duplicates drop year agecat, force;
 foreach i in 18 25 35 45 55 65 {;
 	local incplots `incplots' line incshare year if agecat == `i' ||;
 	local popplots `popplots' line popshare year if agecat == `i' ||;
-	local aincplots `aincplots' line adj_incshare year if agecat == `i' ||;
+	foreach adjustment of local adjustments {;
+		local adjplots_`adjustment' `adjplots_`adjustment'' line incshare_`adjustment' year if agecat == `i' ||;
+	};
 };
 
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
@@ -78,9 +91,25 @@ graph twoway `popplots', legend(order(`ages'))
 	legend(region(lcolor(white)));
 graph export pop_shares.png, replace;
 
-* Adjusted income share plot;
-graph twoway `aincplots', legend(order(`ages')) 
+* Income share plot, adjusted for population;
+graph twoway `adjplots_population', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017)
-	xtitle("") 
+	xtitle("") ytitle("Earnings Shares, Adjusted by Population")
 	legend(region(lcolor(white)));
-graph export adj_income_shares.png, replace;
+graph export adjincome_shares_population.png, replace;
+
+* Income share plot, adjusted for working population;
+graph twoway `adjplots_workers', legend(order(`ages')) 
+	graphregion(color(white)) xlabel(1976(5)2017)
+	xtitle("") ytitle("Earnings Shares, Adjusted by Number of Workers")
+	legend(region(lcolor(white)));
+graph export adjincome_shares_workers.png, replace;
+
+* Income share plot, adjusted for hours worked the previous year;
+graph twoway `adjplots_hoursly', legend(order(`ages')) 
+	graphregion(color(white)) xlabel(1976(5)2017)
+	xtitle("") ytitle("Earnings Shares, Adjusted by Hours Worked")
+	legend(region(lcolor(white)));
+graph export adjincome_shares_hours.png, replace;
+
+
