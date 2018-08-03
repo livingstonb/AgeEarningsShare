@@ -19,7 +19,8 @@ twoway line laborforce25 laborforce65 laborforce75 laborforce55 year, graphregio
 	xsize(3.5)
 	legend(region(lcolor(white)))
 	xlabel(1976(5)2017)
-	graphregion(lcolor(white));
+	graphregion(lcolor(white))
+	bgcolor(white);
 graph export ${basedir}/stats/output/LFPR.png, replace;
 
 * Hours worked;
@@ -32,7 +33,8 @@ twoway line uhrsworkt25 uhrsworkt65 uhrsworkt75 year
 	aspectratio(1)
 	xsize(3.5)
 	legend(region(lcolor(white)))
-	graphregion(lcolor(white));
+	graphregion(lcolor(white))
+	bgcolor(white);
 graph export ${basedir}/stats/output/hrsworked.png, replace;
 window manage close graph;
 
@@ -46,7 +48,8 @@ twoway line bachelors25 bachelors65 bachelors75 year, graphregion(color(white))
 	xsize(3.5)
 	legend(region(lcolor(white)))
 	xlabel(1976(5)2017)
-	graphregion(lcolor(white));
+	graphregion(lcolor(white))
+	bgcolor(white);
 graph export ${basedir}/stats/output/college.png, replace;
 
 * Male composition;
@@ -59,7 +62,8 @@ twoway line male25 male65 male75 year, graphregion(color(white))
 	xsize(3.5)
 	legend(region(lcolor(white)))
 	xlabel(1976(5)2017)
-	graphregion(lcolor(white));
+	graphregion(lcolor(white))
+	bgcolor(white);
 graph export ${basedir}/stats/output/male.png, replace;
 
 * Nonwhite composition;
@@ -69,5 +73,6 @@ twoway line nonwhite25 nonwhite65 nonwhite75 year, graphregion(color(white))
 		label(3 "75+ year olds"))
 	legend(region(lcolor(white)))
 	xlabel(1976(5)2017)
-	graphregion(lcolor(white));
+	graphregion(lcolor(white))
+	bgcolor(white);
 graph export ${basedir}/stats/output/nonwhite.png, replace;

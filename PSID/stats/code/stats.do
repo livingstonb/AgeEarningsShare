@@ -61,16 +61,19 @@ cd ${basedir}/stats/output;
 graph twoway `incplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
-	legend(region(lcolor(white)));
+	legend(region(lcolor(white)))
+	bgcolor(white);
 graph export income_shares.png, replace;
 graph twoway `popplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
-	legend(region(lcolor(white)));
+	legend(region(lcolor(white)))
+	bgcolor(white);
 graph export pop_shares.png, replace;
 graph twoway `aincplots', legend(order(`ages')) 
 	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") 
-	legend(region(lcolor(white)));
+	legend(region(lcolor(white)))
+	bgcolor(white);
 graph export adj_income_shares.png, replace;
 
