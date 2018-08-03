@@ -34,10 +34,16 @@ bysort year agecat: egen popgroup = sum(asecwt);
 by year: egen popyear = sum(asecwt);
 gen popshare = popgroup/popyear;
 
+* Educated share by year;
+gen college_present = (college~=.);
+bysort year agecat: egen collegegroup = sum(asecwt*college);
+by year: egen collegeyear = sum(asecwt*college_present);
+gen incshare_college = collegegroup/collegeyear;
+
 * Adjustment variables;
 gen population 	= asecwt;
 gen workers		= asecwt if incwage > 0;
-gen hoursly		= asecwt*uhrsworkly;
+gen hoursly		= asecwt*uhrsworkly if incwage > 0;
 local adjustments population workers hoursly;
 foreach adjustment of local adjustments {;
 
