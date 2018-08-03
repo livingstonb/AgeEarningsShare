@@ -82,15 +82,21 @@ graph twoway `incplots', legend(order(`ages'))
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
 graph export income_shares.png, replace;
 
 * Population share plot;
 graph twoway `popplots', legend(order(`ages')) 
-	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
+	graphregion(color(white)) xlabel(1976(5)2017))
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
 graph export pop_shares.png, replace;
 
 * Income share plot, adjusted for population;
@@ -98,7 +104,10 @@ graph twoway `adjplots_population', legend(order(`ages'))
 	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") ytitle("Earnings Shares, Adjusted by Population")
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
 graph export adjincome_shares_population.png, replace;
 
 * Income share plot, adjusted for working population;
@@ -106,7 +115,10 @@ graph twoway `adjplots_workers', legend(order(`ages'))
 	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") ytitle("Earnings Shares, Adjusted by Number of Workers")
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
 graph export adjincome_shares_workers.png, replace;
 
 * Income share plot, adjusted for hours worked the previous year;
@@ -114,7 +126,10 @@ graph twoway `adjplots_hoursly', legend(order(`ages'))
 	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") ytitle("Earnings Shares, Adjusted by Hours Worked")
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
 graph export adjincome_shares_hours.png, replace;
 
 
