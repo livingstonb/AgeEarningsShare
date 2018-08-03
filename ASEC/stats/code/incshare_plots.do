@@ -34,12 +34,6 @@ bysort year agecat: egen popgroup = sum(asecwt);
 by year: egen popyear = sum(asecwt);
 gen popshare = popgroup/popyear;
 
-* Educated share by year;
-gen college_present = (college~=.);
-bysort year agecat: egen collegegroup = sum(asecwt*college);
-by year: egen collegeyear = sum(asecwt*college_present);
-gen incshare_college = collegegroup/collegeyear;
-
 * Adjustment variables;
 gen population 	= asecwt;
 gen workers		= asecwt if incwage > 0;
@@ -65,6 +59,21 @@ foreach adjustment of local adjustments {;
 	
 };
 
+* Adjust by education and hours;
+bysort year agecat college: egen groupsum = sum(hoursly);
+by year: egen yearsum = sum(hoursly) if college~=.;
+gen groupshare = groupsum/yearsum;
+drop groupsum yearsum;
+
+bysort agecat college: gen tempshare1976 = groupshare if year == 1976;
+by agecat college: egen share1976 = max(tempshare1976);
+bysort year agecat: egen adj_incgroup = 
+	sum(asecwt*incwage*share1976/groupshare);
+by year: egen adj_incyear = sum(asecwt*incwage*share1976/groupshare);
+gen incshare_college = adj_incgroup/adj_incyear;
+label variable incshare_college "Share of Total Labor Income, Adjusted";
+drop tempshare1976 adj_incgroup adj_incyear groupshare share1976;
+
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS;
 
@@ -76,6 +85,7 @@ foreach i in 18 25 35 45 55 65 {;
 	foreach adjustment of local adjustments {;
 		local adjplots_`adjustment' `adjplots_`adjustment'' line incshare_`adjustment' year if agecat == `i' ||;
 	};
+	local educplot `educplot' line incshare_college year if agecat == `i' ||;
 };
 
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
@@ -88,10 +98,7 @@ graph twoway `incplots', legend(order(`ages'))
 	graphregion(color(white)) xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)))
-	bgcolor(white)
-	legend(span)
-	aspectratio(1)
-	xsize(3.5);
+	bgcolor(white);
 graph export income_shares.png, replace;
 
 * Population share plot;
@@ -137,5 +144,16 @@ graph twoway `adjplots_hoursly', legend(order(`ages'))
 	aspectratio(1)
 	xsize(3.5);
 graph export adjincome_shares_hours.png, replace;
+
+* Income share plot, adjusted for hours worked the previous year AND education;
+graph twoway `educplot', legend(order(`ages')) 
+	graphregion(color(white)) xlabel(1976(5)2017) ylabel(0(0.1)0.3)
+	xtitle("") ytitle("Earnings Shares, Adjusted by Education")
+	legend(region(lcolor(white)))
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5);
+graph export adjincome_shares_college.png, replace;
 
 

@@ -21,7 +21,7 @@ drop if hflag == 1;
 
 * Code missing values;
 replace incwage = . if incwage == 9999998 | incwage == 9999999;
-replace educ = .	if educ == 999;
+replace educ = .	if inlist(educ,1,999);
 replace	uhrsworkt = . if inlist(uhrsworkt,997,999);
 replace uhrsworkly = . if inlist(uhrsworkly,999);
 replace race = . if race == 999;
