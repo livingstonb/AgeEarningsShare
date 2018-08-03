@@ -90,7 +90,7 @@ graph export income_shares.png, replace;
 
 * Population share plot;
 graph twoway `popplots', legend(order(`ages')) 
-	graphregion(color(white)) xlabel(1976(5)2017))
+	graphregion(color(white)) xlabel(1976(5)2017)
 	xtitle("") xlabel(1976(5)2017)
 	legend(region(lcolor(white)))
 	bgcolor(white)
