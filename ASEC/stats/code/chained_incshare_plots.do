@@ -16,7 +16,7 @@ drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
 * Which gender (men/women/both);
-local gender men;
+local gender = "men";
 if "`gender'"=="men" {;
 	keep if male == 1;
 };
@@ -30,7 +30,7 @@ replace agecat = 65 if age >=65;
 label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 	35 "35-44 year olds" 45 "45-54 year olds" 55 "55-64 year olds"
 	65 "65+";
-label values agecat;
+label values agecat agecatlabel;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE POPULATION SHARES, AND UNADJUSTED STATISTICS;
@@ -105,46 +105,58 @@ gen	mearnsharejkt = mearnjkt/mearnt;
 
 duplicates drop agecat year college, force;
 
-* Compute all the components separately here;
-* Component associated with changes in average earnings;
+* Compute separate components of decomposition;
+* Component associated with changes in educational composition (collegeeffect);
 gen panelvar = agecat + college*100;
 tsset panelvar year;
-gen innersumterms = L.popsharejkt*D.mearnsharejkt;
-bysort year agecat: egen innersums = sum(innersumterms);
+gen innersumterms_age		= popsharejkt*mearnsharejkt;
+gen innersumterms_college 	= D.popsharejkt*mearnsharejkt;
+gen innersumterms_earnings 	= L.popsharejkt*D.mearnsharejkt;
+bysort year agecat: egen innersums_age 		= sum(innersumterms_age);
+bysort year agecat: egen innersums_college 	= sum(innersumterms_college);
+bysort year agecat: egen innersums_earnings = sum(innersumterms_earnings);
 
 duplicates drop year agecat, force;
 tsset agecat year;
-gen outersumterms = L.popsharejt*innersums;
-replace outersumterms = 0 if year == 1976;
-bysort agecat (year): gen sumvar = sum(outersumterms);
-gen	earningseffect_college = earnshare_1976 + sumvar;
-
+gen outersumterms_age		= D.popsharejt*innersums_age;
+gen outersumterms_college	= L.popsharejt*innersums_college;
+gen outersumterms_earnings 	= L.popsharejt*innersums_earnings;
+local components age college earnings;
+foreach comp of local components {;
+	replace outersumterms_`comp' = 0 if year == 1976;
+	bysort agecat (year): gen sumvar_`comp' = sum(outersumterms_`comp');
+	gen `comp'effect = earnshare_1976 + sumvar_`comp';
+};
 
 * Plot;
 * Overlaid plots;
 foreach i in 18 25 35 45 55 65 {;
-	local adjplots_college `adjplots_college' line earningseffect_college year if agecat == `i' ||;
+	local adjplots_age `adjplots_age' line ageeffect year if agecat == `i' ||;
+	local adjplots_college `adjplots_college' line collegeeffect year if agecat == `i' ||;
+	local adjplots_earnings `adjplots_earnings' line earningseffect year if agecat == `i' ||;
 };
 
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
-* Income share plot, adjusted for population and education;
-graph twoway `adjplots_college', legend(order(`ages')) 
-	graphregion(color(white)) xlabel(1976(5)2017)
-	xtitle("") ytitle("Contribution of Mean Earnings Variation Within Age and Education Groups")
-	legend(region(lcolor(white)))
-	bgcolor(white)
-	legend(span)
-	aspectratio(1)
-	xsize(3.5);
-	
-cd ${basedir}/stats/output/chained_adjustments/college;
-if "`gender'"=="men" {;
-	graph export earningseffect_men.png, replace;
-};
-else if "`gender'"=="women" {;
-	graph export earningseffect_women.png, replace;
-};
-else if "`gender'"=="both" {;
-	graph export earningseffect_pooled.png, replace;
+* Income share plots, adjusted;
+foreach comp of local components {;
+	graph twoway `adjplots_`comp'', legend(order(`ages')) 
+		graphregion(color(white)) xlabel(1976(5)2017)
+		xtitle("") ytitle("")
+		legend(region(lcolor(white)))
+		bgcolor(white)
+		legend(span)
+		aspectratio(1)
+		xsize(3.5);
+		
+	cd ${basedir}/stats/output/chained_adjustments/college;
+	if "`gender'"=="men" {;
+		graph export `comp'effect_men.png, replace;
+	};
+	else if "`gender'"=="women" {;
+		graph export `comp'effect_women.png, replace;
+	};
+	else if "`gender'"=="both" {;
+		graph export `comp'effect_pooled.png, replace;
+	};
 };
