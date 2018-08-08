@@ -6,34 +6,34 @@ education for each age group over the years 1976-2017, using chained years */;
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTING FOR CHANGING EDUCATION COMPOSITION BETWEEN AGE GROUPS;
 * Population share of education groups within age groups;
-bysort year agecat college: egen popjkt = sum(asecwt);
+bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
 gen popsharejkt = popjkt/popjt;
 
 * Ratio of mean group earnings to mean population earnings;
-bysort year agecat college: egen earnjkt = sum(asecwt*incwage);
+bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 gen	mearnt = earnt/popt;
 gen	mearnsharejkt = mearnjkt/mearnt;
 
-duplicates drop agecat year college, force;
+duplicates drop agecat year $adjustvar, force;
 
 * Compute separate components of decomposition;
-* Component associated with changes in educational composition (collegeeffect);
-gen panelvar = agecat + college*100;
+* Component associated with changes in educational composition ($adjustvareffect);
+gen panelvar = agecat + $adjustvar*100;
 tsset panelvar year;
 gen innersumterms_age		= popsharejkt*mearnsharejkt;
-gen innersumterms_college 	= D.popsharejkt*mearnsharejkt;
+gen innersumterms_$adjustvar 	= D.popsharejkt*mearnsharejkt;
 gen innersumterms_earnings 	= L.popsharejkt*D.mearnsharejkt;
 bysort year agecat: egen innersums_age 		= sum(innersumterms_age);
-bysort year agecat: egen innersums_college 	= sum(innersumterms_college);
+bysort year agecat: egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
 bysort year agecat: egen innersums_earnings = sum(innersumterms_earnings);
 
 duplicates drop year agecat, force;
 tsset agecat year;
 gen outersumterms_age		= D.popsharejt*innersums_age;
-gen outersumterms_college	= L.popsharejt*innersums_college;
+gen outersumterms_$adjustvar	= L.popsharejt*innersums_$adjustvar;
 gen outersumterms_earnings 	= L.popsharejt*innersums_earnings;
-local components age college earnings;
+local components age $adjustvar earnings;
 foreach comp of local components {;
 	replace outersumterms_`comp' = 0 if year == 1976;
 	bysort agecat (year): gen sumvar_`comp' = sum(outersumterms_`comp');
@@ -44,7 +44,7 @@ foreach comp of local components {;
 * Overlaid plots;
 foreach i in 18 25 35 45 55 65 {;
 	local adjplots_age `adjplots_age' line ageeffect year if agecat == `i' ||;
-	local adjplots_college `adjplots_college' line collegeeffect year if agecat == `i' ||;
+	local adjplots_$adjustvar `adjplots_$adjustvar' line ${adjustvar}effect year if agecat == `i' ||;
 	local adjplots_earnings `adjplots_earnings' line earningseffect year if agecat == `i' ||;
 };
 
@@ -61,7 +61,7 @@ foreach comp of local components {;
 		aspectratio(1)
 		xsize(3.5);
 		
-	cd ${basedir}/stats/output/chained_adjustments/college;
+	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	if "$gender"=="men" {;
 		graph export `comp'effect_men.png, replace;
 	};
