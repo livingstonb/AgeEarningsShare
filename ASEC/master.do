@@ -15,6 +15,9 @@ do ${basedir}/build/code/build.do;
 * Plot income shares by age group and year;
 do ${basedir}/stats/code/incshare_plots.do;
 
+* Plot chained income shares, adjusting by various factors;
+do ${basedir}/stats/code/chained_incshares1.do;
+
 * Plot demographic trends;
 do ${basedir}/stats/code/demographic_plots.do;
 
@@ -23,3 +26,4 @@ do ${basedir}/stats/code/changes_table.do;
 
 * Compare median hourly earnings, 1994 and 2017;
 do ${basedir}/stats/code/hourly_earnings_bar.do;
+

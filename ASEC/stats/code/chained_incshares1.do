@@ -3,6 +3,7 @@ clear;
 set more 1;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/chained_adjustments/college;
+cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
 
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
@@ -47,15 +48,18 @@ bysort agecat (year): gen earnshare_1976 = unadj_earnshare[1];
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT ADJUSTED STATISTICS;
+* Adjusted by only population shares;
 preserve;
 do ${basedir}/stats/code/chained_incshares2.do;
 restore;
 
+* Adjusted by population shares and education;
 global adjustvar college;
 preserve;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
+* Adjusted by population shares and weekly hours worked last year;
 global adjustvar hours;
 preserve;
 egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);

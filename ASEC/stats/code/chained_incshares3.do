@@ -55,6 +55,8 @@ foreach comp of local components {;
 	graph twoway `adjplots_`comp'', legend(order(`ages')) 
 		graphregion(color(white)) xlabel(1976(5)2017)
 		xtitle("") ytitle("")
+		yscale(range(0(0.05)0.35))
+		ylabel(0(0.1)0.3)
 		legend(region(lcolor(white)))
 		bgcolor(white)
 		legend(span)
@@ -63,12 +65,12 @@ foreach comp of local components {;
 		
 	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	if "$gender"=="men" {;
-		graph export `comp'effect_men.png, replace;
+		graph export $adjustvar_`comp'effect_men.png, replace;
 	};
 	else if "$gender"=="women" {;
-		graph export `comp'effect_women.png, replace;
+		graph export $adjustvar_`comp'effect_women.png, replace;
 	};
 	else if "$gender"=="both" {;
-		graph export `comp'effect_pooled.png, replace;
+		graph export $adjustvar_`comp'effect_pooled.png, replace;
 	};
 };
