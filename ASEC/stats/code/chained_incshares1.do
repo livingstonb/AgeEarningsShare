@@ -17,7 +17,7 @@ drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
 * Which gender (men/women/both);
-global gender = "men";
+global gender = "women";
 if "$gender"=="men" {;
 	keep if male == 1;
 };

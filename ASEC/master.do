@@ -15,7 +15,7 @@ do ${basedir}/build/code/build.do;
 * Plot income shares by age group and year;
 do ${basedir}/stats/code/incshare_plots.do;
 
-* Plot chained income shares, adjusting by various factors;
+* Plot chained-weighted decomp of income shares, adjusting by various factors;
 do ${basedir}/stats/code/chained_incshares1.do;
 
 * Plot demographic trends;

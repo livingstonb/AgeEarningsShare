@@ -4,7 +4,7 @@ set more 1;
 cap mkdir ${basedir}/stats/output;
 
 /* This do-file plots income share and adjusted income share for each age group
-over the years 1976-2017 */;
+over the years 1976-2017 -- does NOT use chain-weighted decomp */;
 
 use ${basedir}/build/output/ASEC.dta;
 
