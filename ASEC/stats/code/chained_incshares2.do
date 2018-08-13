@@ -24,7 +24,7 @@ foreach i in 18 25 35 45 55 65 {;
 		line adjearnshare_population year if agecat == `i' ||;
 };
 
-* Legend labels
+* Legend labels;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 
 	5 "Ages 55-64" 6 "Ages 65+";
 
@@ -40,12 +40,12 @@ graph twoway `adjplots_population', legend(order(`ages'))
 	
 cd ${basedir}/stats/output/chained_adjustments;
 if "$gender"=="men" {;
-	graph export population_men.png, replace;
+	graph export populationadj_men.png, replace;
 };
 else if "$gender"=="women" {;
-	graph export population_women.png, replace;
+	graph export populationadj_women.png, replace;
 };
 else if "$gender"=="both" {;
-	graph export population_pooled.png, replace;
+	graph export populationadj_pooled.png, replace;
 };
 
