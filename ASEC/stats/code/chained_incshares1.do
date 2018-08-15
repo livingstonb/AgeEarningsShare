@@ -1,6 +1,7 @@
 #delimit;
 clear;
 set more 1;
+cap mkdir ${basedir}/stats/output/unadjusted;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/chained_adjustments/college;
 cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
@@ -34,7 +35,7 @@ label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 label values agecat agecatlabel;
 
 ////////////////////////////////////////////////////////////////////////////////
-* COMPUTE POPULATION SHARES, AND UNADJUSTED STATISTICS;
+* COMPUTE POPULATION SHARES AND UNADJUSTED STATISTICS;
 * Population shares;
 bysort year agecat: egen popjt = sum(asecwt);
 by year: 			egen popt = sum(asecwt);
@@ -45,6 +46,22 @@ bysort year agecat:	egen earnjt	= sum(asecwt*incwage);
 by year: egen earnt = sum(asecwt*incwage);
 gen unadj_earnshare = earnjt/earnt;
 bysort agecat (year): gen earnshare_1976 = unadj_earnshare[1];
+
+* Plot unadjusted earnings shares;
+preserve;
+duplicates drop year agecat, force;
+foreach i in 18 25 35 45 55 65 {;
+	local incplots `incplots' line unadj_earnshare year if agecat == `i' ||;
+};
+local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
+graph twoway `incplots', legend(order(`ages')) 
+	graphregion(color(white)) 
+	xtitle("") ytitle("") xlabel(1976(5)2017) ylab(0(0.1)0.3)
+	legend(region(lcolor(white)))
+	bgcolor(white);
+cd ${basedir}/stats/output/unadjusted;
+graph export unadj_earnshare_${gender}.png, replace;
+restore;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT ADJUSTED STATISTICS;
