@@ -2,6 +2,7 @@
 clear;
 set more 1;
 cap mkdir ${basedir}/stats/output/unadjusted;
+cap mkdir ${basedir}/stats/output/agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/chained_adjustments/college;
 cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
@@ -18,7 +19,7 @@ drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
 * Which gender (men/women/both);
-global gender = "women";
+global gender = "both";
 if "$gender"=="men" {;
 	keep if male == 1;
 };
@@ -40,6 +41,7 @@ label values agecat agecatlabel;
 bysort year agecat: egen popjt = sum(asecwt);
 by year: 			egen popt = sum(asecwt);
 gen popsharejt 	= popjt/popt;
+bysort agecat (year): gen popshare_1976 = popsharejt[1];
 
 * Unadjusted earnings share for 1976;
 bysort year agecat:	egen earnjt	= sum(asecwt*incwage);
@@ -58,7 +60,11 @@ graph twoway `incplots', legend(order(`ages'))
 	graphregion(color(white)) 
 	xtitle("") ytitle("") xlabel(1976(5)2017) ylab(0(0.1)0.3)
 	legend(region(lcolor(white)))
-	bgcolor(white);
+	bgcolor(white)
+	legend(span)
+	aspectratio(1)
+	xsize(3.5)
+	ysize(3.8);
 cd ${basedir}/stats/output/unadjusted;
 graph export unadj_earnshare_${gender}.png, replace;
 restore;
