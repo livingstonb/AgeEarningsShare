@@ -16,20 +16,20 @@ gen earnshare_popadj = popshare_1976*mearnsharejt;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-* Component associated with age share;
+* Component associated with mean earnings;
 tsset agecat year;
 gen 	sumterms = L.popsharejt*D.mearnsharejt;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen	decomp_age = earnshare_1976 + sumvar;
+gen	decomp_earnings = earnshare_1976 + sumvar;
 drop sumterms sumvar;
 
-* Component associated with mean earnings;
+* Component associated with age share;
 tsset agecat year;
 gen 	sumterms = D.popsharejt*mearnsharejt;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen	decomp_earnings = earnshare_1976 + sumvar;
+gen	decomp_age = earnshare_1976 + sumvar;
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR AGE SHARE ADJUSTMENT;
