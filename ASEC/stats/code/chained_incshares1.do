@@ -21,7 +21,7 @@ drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
 * Which gender (men/women/both);
-global gender = "both";
+global gender = "women";
 if "$gender"=="men" {;
 	keep if male == 1;
 };
@@ -103,8 +103,10 @@ do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
 * Adjusted by population shares and gender;
-global adjustvar male;
-global adjustlabel Gender;
-preserve;
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
+if "$gender"=="both" {;
+	global adjustvar male;
+	global adjustlabel Gender;
+	preserve;
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
+};
