@@ -6,6 +6,8 @@ cap mkdir ${basedir}/stats/output/agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/chained_adjustments/college;
 cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
+cap mkdir ${basedir}/stats/output/chained_adjustments/nonwhite;
+cap mkdir ${basedir}/stats/output/chained_adjustments/male;
 
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
@@ -90,5 +92,19 @@ preserve;
 egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);
 replace hours = 80 if uhrsworkly>=80 & uhrsworkly<.;
 drop if hours == .;
+do ${basedir}/stats/code/chained_incshares3.do;
+restore;
+
+* Adjusted by population shares and race;
+global adjustvar nonwhite;
+global adjustlabel Race;
+preserve;
+do ${basedir}/stats/code/chained_incshares3.do;
+restore;
+
+* Adjusted by population shares and gender;
+global adjustvar male;
+global adjustlabel Gender;
+preserve;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
