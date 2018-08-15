@@ -43,37 +43,32 @@ foreach comp of local components {;
 	gen `comp'effect = earnshare_1976 + sumvar_`comp';
 };
 
-* Plots;
-foreach i in 18 25 35 45 55 65 {;
-	local adjplots_age `adjplots_age' line ageeffect year if agecat == `i' ||;
-	local adjplots_$adjustvar `adjplots_$adjustvar' line ${adjustvar}effect year if agecat == `i' ||;
-	local adjplots_earnings `adjplots_earnings' line earningseffect year if agecat == `i' ||;
-};
+////////////////////////////////////////////////////////////////////////////////
+* PLOTS;
 
 * Legend labels;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
-* Income share plots, adjusted;
-foreach comp of local components {;
-	graph twoway `adjplots_`comp'', legend(order(`ages')) 
-		graphregion(color(white)) xlabel(1976(5)2017)
+foreach i in 18 25 35 45 55 65 {;
+	local adjplots_age line ageeffect year if agecat == `i' ||;
+	local adjplots_$adjustvar line ${adjustvar}effect year if agecat == `i' ||;
+	local adjplots_earnings line earningseffect year if agecat == `i' ||;
+	local adjplots_unadjusted line unadj_earnshare year if agecat == `i' ||;
+
+	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
+		`adjplots_unadjusted',
+		legend(order(1 "Age Share Component" 2 "${adjustlabel} Component"
+			3 "Earnings Component" 4 "Unadjusted Shares")) 
+		legend(cols(1))
+		graphregion(color(white)) xlabel(1976(10)2017)
 		xtitle("") ytitle("")
-		yscale(range(0(0.05)0.35))
-		ylabel(0(0.1)0.3)
 		legend(region(lcolor(white)))
 		bgcolor(white)
 		legend(span)
-		aspectratio(1)
-		xsize(3.5);
-		
+		xsize(3.5)
+		ysize(3)
+		scale(1.6);
+	* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
 	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
-	if "$gender"=="men" {;
-		graph export ${adjustvar}_`comp'effect_men.png, replace;
-	};
-	else if "$gender"=="women" {;
-		graph export ${adjustvar}_`comp'effect_women.png, replace;
-	};
-	else if "$gender"=="both" {;
-		graph export ${adjustvar}_`comp'effect_pooled.png, replace;
-	};
+	graph export ${adjustvar}`i'_${gender}.png, replace;
 };

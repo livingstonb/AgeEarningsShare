@@ -78,12 +78,14 @@ restore;
 
 * Adjusted by population shares and education;
 global adjustvar college;
+global adjustlabel Education;
 preserve;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
 * Adjusted by population shares and weekly hours worked last year;
 global adjustvar hours;
+global adjustlabel Hours;
 preserve;
 egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);
 replace hours = 80 if uhrsworkly>=80 & uhrsworkly<.;
