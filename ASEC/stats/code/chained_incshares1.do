@@ -8,6 +8,8 @@ cap mkdir ${basedir}/stats/output/chained_adjustments/college;
 cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
 cap mkdir ${basedir}/stats/output/chained_adjustments/nonwhite;
 cap mkdir ${basedir}/stats/output/chained_adjustments/male;
+cap mkdir ${basedir}/stats/output/chained_adjustments/married;
+cap mkdir ${basedir}/stats/output/chained_adjustments/ehrm;
 
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
@@ -36,6 +38,9 @@ label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 	35 "35-44 year olds" 45 "45-54 year olds" 55 "55-64 year olds"
 	65 "65+";
 label values agecat agecatlabel;
+
+egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);
+replace hours = 80 if uhrsworkly>=80 & uhrsworkly<.;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE POPULATION SHARES AND UNADJUSTED STATISTICS;
@@ -79,34 +84,49 @@ do ${basedir}/stats/code/chained_incshares2.do;
 restore;
 
 * Adjusted by population shares and education;
+preserve;
 global adjustvar college;
 global adjustlabel Education;
-preserve;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
 * Adjusted by population shares and weekly hours worked last year;
+preserve;
 global adjustvar hours;
 global adjustlabel Hours;
-preserve;
-egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);
-replace hours = 80 if uhrsworkly>=80 & uhrsworkly<.;
 drop if hours == .;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
 * Adjusted by population shares and race;
+preserve;
 global adjustvar nonwhite;
 global adjustlabel Race;
-preserve;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
 * Adjusted by population shares and gender;
 if "$gender"=="both" {;
+	preserve;
 	global adjustvar male;
 	global adjustlabel Gender;
-	preserve;
 	do ${basedir}/stats/code/chained_incshares3.do;
 	restore;
 };
+
+* Adjusted by population shares and marital status;
+preserve;
+global adjustvar married;
+global adjustlabel "Marital Status";
+do ${basedir}/stats/code/chained_incshares3.do;
+restore;
+
+* Decomposition by age and education/hours/race/marital status;
+preserve;
+gen ehrm = college + hours*100 + nonwhite*10000 
+								+ married*1000000;
+drop if ehrm==.;
+global adjustvar ehrm;
+global adjustlabel "Education/Hours/Race/Married";
+do ${basedir}/stats/code/chained_incshares3.do;
+restore;

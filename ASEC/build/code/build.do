@@ -25,6 +25,7 @@ replace educ = .	if inlist(educ,1,999);
 replace	uhrsworkt = . if inlist(uhrsworkt,997,999);
 replace uhrsworkly = . if inlist(uhrsworkly,999);
 replace race = . if race == 999;
+replace marst = . if marst == 9;
 
 ////////////////////////////////////////////////////////////////////////////////
 * TOP-CODING;
@@ -45,5 +46,8 @@ replace nonwhite = 0 if race==100;
 
 gen college = 1 if educ >= 110 & educ<.;
 replace college = 0 if educ < 110;
+
+gen married = 1 if inlist(marst,1,2);
+replace married = 0 if inlist(marst,3,4,5,6,7);
 
 save ${basedir}/build/output/ASEC.dta, replace;

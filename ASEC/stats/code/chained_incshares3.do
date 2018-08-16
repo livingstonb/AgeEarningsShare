@@ -57,8 +57,8 @@ foreach i in 18 25 35 45 55 65 {;
 
 	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
 		`adjplots_unadjusted',
-		legend(order(1 "Age Share Component" 2 "${adjustlabel} Component"
-			3 "Earnings Component" 4 "Unadjusted Shares")) 
+		legend(order(1 "Age Share Component" 2 "${adjustlabel}"
+			3 "Mean Earnings Component" 4 "Unadjusted Shares")) 
 		legend(cols(1))
 		graphregion(color(white)) xlabel(1976(10)2017)
 		xtitle("") ytitle("")
