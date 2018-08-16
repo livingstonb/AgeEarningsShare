@@ -19,7 +19,7 @@ duplicates drop agecat year $adjustvar, force;
 
 * Compute separate components of decomposition;
 
-gen panelvar = agecat + $adjustvar*100;
+egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 gen innersumterms_age			= popsharejkt*mearnsharejkt;
 gen innersumterms_$adjustvar 	= D.popsharejkt*mearnsharejkt;

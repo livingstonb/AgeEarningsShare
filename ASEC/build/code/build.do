@@ -50,4 +50,18 @@ replace college = 0 if educ < 110;
 gen married = 1 if inlist(marst,1,2);
 replace married = 0 if inlist(marst,3,4,5,6,7);
 
+gen industry = .;
+replace industry = 1 if ind1990>=10 & ind1990<=32;
+replace industry = 2 if ind1990>=40 & ind1990<=50;
+replace industry = 3 if ind1990==60;
+replace industry = 4 if ind1990>=100 & ind1990<=392;
+replace industry = 5 if ind1990>=400 & ind1990<=571;
+replace industry = 6 if ind1990>=580 & ind1990<=691;
+replace industry = 7 if ind1990>=700 & ind1990<=712;
+replace industry = 8 if ind1990>=721 & ind1990<=760;
+replace industry = 9 if ind1990>=761 & ind1990<=791;
+replace industry = 10 if ind1990>=800 & ind1990<=810;
+replace industry = 11 if ind1990>=812 & ind1990<=893;
+replace industry = 12 if ind1990>=900 & ind1990<=932;
+
 save ${basedir}/build/output/ASEC.dta, replace;

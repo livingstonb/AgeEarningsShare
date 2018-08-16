@@ -9,7 +9,9 @@ cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
 cap mkdir ${basedir}/stats/output/chained_adjustments/nonwhite;
 cap mkdir ${basedir}/stats/output/chained_adjustments/male;
 cap mkdir ${basedir}/stats/output/chained_adjustments/married;
-cap mkdir ${basedir}/stats/output/chained_adjustments/ehrm;
+cap mkdir ${basedir}/stats/output/chained_adjustments/industry;
+cap mkdir ${basedir}/stats/output/chained_adjustments/ehrmi;
+
 
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
@@ -121,12 +123,19 @@ global adjustlabel "Marital Status";
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
-* Decomposition by age and education/hours/race/marital status;
+* Adjusted by population shares and industry;
 preserve;
-gen ehrm = college + hours*100 + nonwhite*10000 
-								+ married*1000000;
-drop if ehrm==.;
-global adjustvar ehrm;
-global adjustlabel "Education/Hours/Race/Married";
+global adjustvar industry;
+drop if industry == .;
+global adjustlabel Industry;
+do ${basedir}/stats/code/chained_incshares3.do;
+restore;
+
+* Decomposition by age and education/hours/race/marital status/industry;
+preserve;
+egen ehrmi = group(college hours nonwhite married industry);
+drop if ehrmi==.;
+global adjustvar ehrmi;
+global adjustlabel "Educ/Hours/Race/Married/Industry";
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
