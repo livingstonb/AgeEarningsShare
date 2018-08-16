@@ -41,11 +41,15 @@ label define agecatlabel 18 "18-25 year olds" 25 "25-34 year olds"
 	65 "65+";
 label values agecat agecatlabel;
 
-egen hours = cut(uhrsworkly), at(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80);
-replace hours = 80 if uhrsworkly>=80 & uhrsworkly<.;
+gen hours = 0 if weeklyhours==0;
+replace hours = 1 if weeklyhours>0 & weeklyhours<=10;
+replace hours = 2 if weeklyhours>10 & weeklyhours<=35;
+replace hours = 3 if weeklyhours>35 & weeklyhours<=45;
+replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
+replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
-* COMPUTE POPULATION SHARES AND UNADJUSTED STATISTICS;
+* UNADJUSTED  SHARES;
 * Population shares;
 bysort year agecat: egen popjt = sum(asecwt);
 by year: 			egen popt = sum(asecwt);
@@ -96,7 +100,6 @@ restore;
 preserve;
 global adjustvar hours;
 global adjustlabel Hours;
-drop if hours == .;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
 
@@ -126,7 +129,6 @@ restore;
 * Adjusted by population shares and industry;
 preserve;
 global adjustvar industry;
-drop if industry == .;
 global adjustlabel Industry;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;
@@ -134,7 +136,6 @@ restore;
 * Decomposition by age and education/hours/race/marital status/industry;
 preserve;
 egen ehrmi = group(college hours nonwhite married industry);
-drop if ehrmi==.;
 global adjustvar ehrmi;
 global adjustlabel "Educ/Hours/Race/Married/Industry";
 do ${basedir}/stats/code/chained_incshares3.do;
