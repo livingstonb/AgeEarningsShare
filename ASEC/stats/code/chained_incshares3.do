@@ -72,3 +72,17 @@ foreach i in 18 25 35 45 55 65 {;
 	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	graph export ${adjustvar}`i'_${gender}.png, replace;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+* COMPUTE STATISTICS FOR TABLE;
+keep if year==1976 | year==2017;
+bysort	agecat (year): gen ushare1976 = uearnshare[1];
+by		agecat: gen ushare2017 = uearnshare[2];
+by		agecat: gen ageeff1976	= ageeffect[1];
+by		agecat: gen ageeff2017	= ageeffect[2];
+by		agecat: gen earningseff1976 = earningseffect[1];
+by		agecat: gen earningseff2017 = earningseffect[2];
+by		agecat: gen ${adjustvar}eff1976 = ${adjustvar}effect[1];
+by		agecat: gen ${adjustvar}eff2017 = ${adjustvar}effect[2];
+
+keep year ushare???? ageeff???? earningseff???? ${adjustvar}eff????;
