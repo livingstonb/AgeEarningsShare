@@ -62,7 +62,7 @@ graph export populationadj_${gender}.png, replace;
 foreach i in 18 25 35 45 55 65 {;
 	local decompageplot line decomp_age year if agecat==`i' ||;
 	local decompearningsplot line decomp_earnings year if agecat==`i' ||;
-	local unadjplot line unadj_earnshare year if agecat==`i' ||;
+	local unadjplot line uearnshare year if agecat==`i' ||;
 	
 	graph twoway `decompageplot' `decompearningsplot' `unadjplot', 
 		legend(order(1 "Age Share Component" 2 "Mean Earnings Component"

@@ -2,18 +2,25 @@
 
 /* This do-file plots income shares adjusted by the age distribution and adjusted
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
-chain-weighted decomposition */;
+chain-weighted decomposition. Uses the ALTERNATIVE decomposition */;
 
-////////////////////////////////////////////////////////////////////////////////
+
 * Population share of $adustvar groups within age groups;
 bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
 gen popsharejkt = popjkt/popjt;
 
-* Ratio of mean group earnings to mean population earnings;
-bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
-gen mearnjkt	= earnjkt/popjkt;
-gen	mearnt = earnt/popt;
-gen	mearnsharejkt = mearnjkt/mearnt;
+
+* Ratio of mean Yjkt to mean Ykt;
+bysort year agecat $adjustvar: 	egen earnjkt 	= sum(asecwt*incwage);
+by year agecat $adjustvar:		egen popjkt		= sum(asecwt);
+bysort year $adjustvar: 		egen earnkt	 	= sum(asecwt*incwage);
+by year $adjustvar: 			egen popkt	 	= sum(asecwt);
+gen earnsharekt = earnkt/earnt;
+gen popsharejkt = popjkt/popjt;
+gen popsharejkt_kt = popsharejkt/popsharekt;
+gen mearnjkt = earnjkt/popjkt;
+gen	mearnkt = earnkt/popkt;
+gen	mearnjkt_kt = mearnjkt/mearnkt;
 
 duplicates drop agecat year $adjustvar, force;
 
@@ -21,27 +28,36 @@ duplicates drop agecat year $adjustvar, force;
 
 egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
-gen innersumterms_age			= popsharejkt*mearnsharejkt;
-gen innersumterms_$adjustvar 	= D.popsharejkt*mearnsharejkt;
-gen innersumterms_earnings 		= L.popsharejkt*D.mearnsharejkt;
+gen innersumterms1		= earnsharekt*popsharejkt_kt*mearnjkt_kt;
+gen innersumterms2 		= D.popsharekt*popsharejkt_kt*mearnjkt_kt;
+gen innersumterms3 		= L.earnsharekt*D.popsharejkt_kt*mearnjkt_kt;
+gen innersumterms4		= L.earnsharekt*L.popsharejkt_kt*D.mearnjkt_kt;
 * Sum over values of $adjustvar;
-bysort year agecat: egen innersums_age 			= sum(innersumterms_age);
-bysort year agecat: egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
-bysort year agecat: egen innersums_earnings 	= sum(innersumterms_earnings);
+forvalues i=1/4 {;
+	bysort year agecat: egen innersum`i' = sum(innersumterms`i');
+};
 
 duplicates drop year agecat, force;
 tsset agecat year;
-gen outersumterms_age			= D.popsharejt*innersums_age;
-gen outersumterms_$adjustvar	= L.popsharejt*innersums_$adjustvar;
-gen outersumterms_earnings 		= L.popsharejt*innersums_earnings;
-local components age $adjustvar earnings;
-foreach comp of local components {;
-	replace outersumterms_`comp' = 0 if year == 1976;
+
+gen outersumterms1 = D.popsharejt*innersum1;
+gen outersumterms2 = L.popsharejt*innersum2;
+gen outersumterms3 = L.popsharejt*innersum3;
+gen outersumterms4 = L.popsharejt*innersum4;
+
+forvalues i=1/4 {;
+	replace outersumterms`i' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
-	bysort agecat (year): gen sumvar_`comp' = sum(outersumterms_`comp');
+	bysort agecat (year): gen component`i' = sum(outersumterms`i');
 	* Component's isolated effect on earnings shares;
-	gen `comp'effect = earnshare_1976 + sumvar_`comp';
+	gen path`i' = earnshare_1976 + component`i';
 };
+
+////////////////////////////////////////////////////////////////////////////////
+* COMBINE COMPONENTS 2 AND 3;
+gen baseeffect = component1;
+gen ${adjustvar}effect = component2 + component3;
+gen earningseffect = component4;
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS;
@@ -53,7 +69,7 @@ foreach i in 18 25 35 45 55 65 {;
 	local adjplots_age line ageeffect year if agecat == `i' ||;
 	local adjplots_$adjustvar line ${adjustvar}effect year if agecat == `i' ||;
 	local adjplots_earnings line earningseffect year if agecat == `i' ||;
-	local adjplots_unadjusted line uearnshare year if agecat == `i' ||;
+	local adjplots_unadjusted line unadj_earnshare year if agecat == `i' ||;
 
 	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
 		`adjplots_unadjusted',
@@ -69,6 +85,6 @@ foreach i in 18 25 35 45 55 65 {;
 		ysize(3)
 		scale(1.6);
 	* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
-	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
+	cd ${basedir}/stats/output/alternative_chained_adjustments/${adjustvar};
 	graph export ${adjustvar}`i'_${gender}.png, replace;
 };
