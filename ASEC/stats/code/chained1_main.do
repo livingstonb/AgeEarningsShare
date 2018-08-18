@@ -40,7 +40,7 @@ replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
-* UNADJUSTED  SHARES;
+* UNADJUSTED  SHARES AND IMPORTANT STATISTICS;
 * Population shares;
 bysort year agecat male: 	egen popjt = sum(asecwt);
 by year: 					egen popt = sum(asecwt);
@@ -53,21 +53,29 @@ by year: 					egen earnt = sum(asecwt*incwage);
 gen uearnshare = earnjt/earnt;
 bysort agecat male (year): 	gen earnshare_1976 = uearnshare[1];
 
+* Ratio of mean group earnings to mean population earnings;
+gen mearnjt	= earnjt/popjt;
+gen	mearnt = earnt/popt;
+gen	mearnsharejt = mearnjt/mearnt;
+assert 0;
+
 * Plot unadjusted earnings shares;
 preserve;
 do ${basedir}/stats/code/chained2_plotunadjusted.do;
 restore;
 
 ////////////////////////////////////////////////////////////////////////////////
-* COMPUTE AND PLOT ADJUSTED STATISTICS;
+* DECOMPOSE BY AGE GROUP ONLY;
+preserve;
+do ${basedir}/stats/code/chained3_agedecomp.do;
+restore;
+
+////////////////////////////////////////////////////////////////////////////////
+* COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Adjusted by only population shares;
 local genders men women;
 foreach gend of local genders {;
 	global gender `gend';
-
-	preserve;
-	do ${basedir}/stats/code/chained3_agedecomp.do;
-	restore;
 
 	* Adjusted by population shares and education;
 	preserve;
