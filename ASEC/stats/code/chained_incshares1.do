@@ -24,15 +24,6 @@ drop if age < 18;
 drop if incwage < 0 | incwage == .;
 drop if topcode == 1;
 
-* Which gender (men/women/both);
-global gender = "women";
-if "$gender"=="men" {;
-	keep if male == 1;
-};
-else if "$gender"=="women" {;
-	keep if male == 0;
-};
-
 egen agecat = cut(age), at(18,25,35,45,55,65);
 replace agecat = 65 if age >=65;
 
@@ -85,58 +76,61 @@ restore;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT ADJUSTED STATISTICS;
 * Adjusted by only population shares;
-preserve;
-do ${basedir}/stats/code/chained_incshares2.do;
-restore;
-
-* Adjusted by population shares and education;
-preserve;
-global adjustvar college;
-global adjustlabel Education;
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
-
-* Adjusted by population shares and weekly hours worked last year;
-preserve;
-global adjustvar hours;
-global adjustlabel Hours;
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
-
-* Adjusted by population shares and race;
-preserve;
-global adjustvar nonwhite;
-global adjustlabel Race;
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
-
-* Adjusted by population shares and gender;
-if "$gender"=="both" {;
+local genders men women;
+foreach gend of local genders {;
+	global gender `gend';
 	preserve;
-	global adjustvar male;
-	global adjustlabel Gender;
+	do ${basedir}/stats/code/chained_incshares2.do;
+	restore;
+
+	* Adjusted by population shares and education;
+	preserve;
+	global adjustvar college;
+	global adjustlabel Education;
 	do ${basedir}/stats/code/chained_incshares3.do;
 	restore;
-};
 
-* Adjusted by population shares and marital status;
-preserve;
-global adjustvar married;
-global adjustlabel "Marital Status";
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
+	* Adjusted by population shares and weekly hours worked last year;
+	preserve;
+	global adjustvar hours;
+	global adjustlabel Hours;
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
 
-* Adjusted by population shares and industry;
-preserve;
-global adjustvar industry;
-global adjustlabel Industry;
-do ${basedir}/stats/code/chained_incshares3.do;
-restore;
+	* Adjusted by population shares and race;
+	preserve;
+	global adjustvar nonwhite;
+	global adjustlabel Race;
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
 
-* Decomposition by age and education/hours/race/marital status/industry;
+	* Adjusted by population shares and marital status;
+	preserve;
+	global adjustvar married;
+	global adjustlabel "Marital Status";
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
+
+	* Adjusted by population shares and industry;
+	preserve;
+	global adjustvar industry;
+	global adjustlabel Industry;
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
+
+	* Decomposition by age and education/hours/race/marital status/industry;
+	preserve;
+	egen ehrmi = group(college hours nonwhite married industry);
+	global adjustvar ehrmi;
+	global adjustlabel "Educ/Hours/Race/Married/Industry";
+	do ${basedir}/stats/code/chained_incshares3.do;
+	restore;
+};	
+
+* Adjusted by population shares and gender;
+global gender both;
 preserve;
-egen ehrmi = group(college hours nonwhite married industry);
-global adjustvar ehrmi;
-global adjustlabel "Educ/Hours/Race/Married/Industry";
+global adjustvar male;
+global adjustlabel Gender;
 do ${basedir}/stats/code/chained_incshares3.do;
 restore;

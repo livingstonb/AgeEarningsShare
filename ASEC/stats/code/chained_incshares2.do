@@ -3,6 +3,13 @@
 /* This do-file plots income share adjusted by population shares for each age group
 over the years 1976-2017, using a chain-weighted decomposition */;
 
+if "$gender"=="men" {;
+	keep if male == 1;
+};
+else if "$gender"=="women" {;
+	keep if male == 0;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 * ADJUSTING FOR CHANGES IN AGE SHARE;
 duplicates drop agecat year, force;

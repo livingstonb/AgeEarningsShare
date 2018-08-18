@@ -4,6 +4,13 @@
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
+if "$gender"=="men" {;
+	keep if male == 1;
+};
+else if "$gender"=="women" {;
+	keep if male == 0;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
 bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
