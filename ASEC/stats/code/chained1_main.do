@@ -42,35 +42,20 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 ////////////////////////////////////////////////////////////////////////////////
 * UNADJUSTED  SHARES;
 * Population shares;
-bysort year agecat: egen popjt = sum(asecwt);
-by year: 			egen popt = sum(asecwt);
-gen popsharejt 	= popjt/popt;
-bysort agecat (year): gen popshare_1976 = popsharejt[1];
+bysort year agecat male: 	egen popjt = sum(asecwt);
+by year: 					egen popt = sum(asecwt);
+gen popsharejt = popjt/popt;
+bysort agecat male (year): 	gen popshare_1976 = popsharejt[1];
 
 * Unadjusted earnings share for 1976;
-bysort year agecat:	egen earnjt	= sum(asecwt*incwage);
-by year: egen earnt = sum(asecwt*incwage);
+bysort year agecat male: 	egen earnjt = sum(asecwt*incwage);
+by year: 					egen earnt = sum(asecwt*incwage);
 gen uearnshare = earnjt/earnt;
-bysort agecat (year): gen earnshare_1976 = uearnshare[1];
+bysort agecat male (year): 	gen earnshare_1976 = uearnshare[1];
 
 * Plot unadjusted earnings shares;
 preserve;
-duplicates drop year agecat, force;
-foreach i in 18 25 35 45 55 65 {;
-	local incplots `incplots' line uearnshare year if agecat == `i' ||;
-};
-local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
-graph twoway `incplots', legend(order(`ages')) 
-	graphregion(color(white)) 
-	xtitle("") ytitle("") xlabel(1976(5)2017) ylab(0(0.1)0.3)
-	legend(region(lcolor(white)))
-	bgcolor(white)
-	legend(span)
-	aspectratio(1)
-	xsize(3.5)
-	ysize(3.8);
-cd ${basedir}/stats/output/unadjusted;
-graph export uearnshare_${gender}.png, replace;
+do ${basedir}/stats/code/chained2_plotunadjusted.do;
 restore;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,42 +66,42 @@ foreach gend of local genders {;
 	global gender `gend';
 
 	preserve;
-	do ${basedir}/stats/code/chained_incshares2.do;
+	do ${basedir}/stats/code/chained3_agedecomp.do;
 	restore;
 
 	* Adjusted by population shares and education;
 	preserve;
 	global adjustvar college;
 	global adjustlabel Education;
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 
 	* Adjusted by population shares and weekly hours worked last year;
 	preserve;
 	global adjustvar hours;
 	global adjustlabel Hours;
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 
 	* Adjusted by population shares and race;
 	preserve;
 	global adjustvar nonwhite;
 	global adjustlabel Race;
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 
 	* Adjusted by population shares and marital status;
 	preserve;
 	global adjustvar married;
 	global adjustlabel "Marital Status";
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 
 	* Adjusted by population shares and industry;
 	preserve;
 	global adjustvar industry;
 	global adjustlabel Industry;
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 
 	* Decomposition by age and education/hours/race/marital status/industry;
@@ -124,7 +109,7 @@ foreach gend of local genders {;
 	egen ehrmi = group(college hours nonwhite married industry);
 	global adjustvar ehrmi;
 	global adjustlabel "Educ/Hours/Race/Married/Industry";
-	do ${basedir}/stats/code/chained_incshares3.do;
+	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 };	
 
@@ -133,5 +118,5 @@ global gender both;
 preserve;
 global adjustvar male;
 global adjustlabel Gender;
-do ${basedir}/stats/code/chained_incshares3.do;
+do ${basedir}/stats/code/chained4_decomp.do;
 restore;
