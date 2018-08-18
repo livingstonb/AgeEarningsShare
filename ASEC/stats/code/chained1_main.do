@@ -12,7 +12,6 @@ cap mkdir ${basedir}/stats/output/chained_adjustments/married;
 cap mkdir ${basedir}/stats/output/chained_adjustments/industry;
 cap mkdir ${basedir}/stats/output/chained_adjustments/ehrmi;
 
-
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
 
@@ -57,7 +56,7 @@ bysort agecat male (year): 	gen earnshare_1976 = uearnshare[1];
 gen mearnjt	= earnjt/popjt;
 gen	mearnt = earnt/popt;
 gen	mearnsharejt = mearnjt/mearnt;
-assert 0;
+
 
 * Plot unadjusted earnings shares;
 preserve;
@@ -73,58 +72,20 @@ restore;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Adjusted by only population shares;
-local genders men women;
-foreach gend of local genders {;
-	global gender `gend';
+global pooled 0;
+local adjustvars 	college		hours 	nonwhite	married		industry 
+	ehrmi;
+local adjustlabels	College		Hours	Race		Married		Industry	
+	Educ/Hours/Race/Married/Industry;
 
-	* Adjusted by population shares and education;
-	preserve;
-	global adjustvar college;
-	global adjustlabel Education;
-	do ${basedir}/stats/code/chained4_decomp.do;
-	restore;
+egen ehrmi = group(college hours nonwhite married industry);
 
-	* Adjusted by population shares and weekly hours worked last year;
+forvalues k=1/6 {;
+	global adjustvar : word `k' of `adjustvars';
+	global adjustlabel : word `k' of `adjustlabels';
 	preserve;
-	global adjustvar hours;
-	global adjustlabel Hours;
-	do ${basedir}/stats/code/chained4_decomp.do;
-	restore;
-
-	* Adjusted by population shares and race;
-	preserve;
-	global adjustvar nonwhite;
-	global adjustlabel Race;
-	do ${basedir}/stats/code/chained4_decomp.do;
-	restore;
-
-	* Adjusted by population shares and marital status;
-	preserve;
-	global adjustvar married;
-	global adjustlabel "Marital Status";
-	do ${basedir}/stats/code/chained4_decomp.do;
-	restore;
-
-	* Adjusted by population shares and industry;
-	preserve;
-	global adjustvar industry;
-	global adjustlabel Industry;
-	do ${basedir}/stats/code/chained4_decomp.do;
-	restore;
-
-	* Decomposition by age and education/hours/race/marital status/industry;
-	preserve;
-	egen ehrmi = group(college hours nonwhite married industry);
-	global adjustvar ehrmi;
-	global adjustlabel "Educ/Hours/Race/Married/Industry";
 	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 };	
 
-* Adjusted by population shares and gender;
-global gender both;
-preserve;
-global adjustvar male;
-global adjustlabel Gender;
-do ${basedir}/stats/code/chained4_decomp.do;
-restore;
+* Adjust by population shares and gender;
