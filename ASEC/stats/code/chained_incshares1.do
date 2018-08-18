@@ -79,6 +79,7 @@ restore;
 local genders men women;
 foreach gend of local genders {;
 	global gender `gend';
+
 	preserve;
 	do ${basedir}/stats/code/chained_incshares2.do;
 	restore;

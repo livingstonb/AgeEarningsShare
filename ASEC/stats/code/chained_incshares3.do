@@ -83,13 +83,13 @@ foreach i in 18 25 35 45 55 65 {;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE STATISTICS FOR TABLE;
 keep if year==1976 | year==2017;
-bysort	agecat (year): gen ushare1976 = uearnshare[1];
-by		agecat: gen ushare2017 = uearnshare[2];
-by		agecat: gen ageeff1976	= ageeffect[1];
-by		agecat: gen ageeff2017	= ageeffect[2];
-by		agecat: gen earningseff1976 = earningseffect[1];
-by		agecat: gen earningseff2017 = earningseffect[2];
-by		agecat: gen ${adjustvar}eff1976 = ${adjustvar}effect[1];
-by		agecat: gen ${adjustvar}eff2017 = ${adjustvar}effect[2];
+sort agecat year uearnshare *effect;
+keep agecat year uearnshare *effect;
 
-keep year ushare???? ageeff???? earningseff???? ${adjustvar}eff????;
+bysort agecat (year): gen period = _n;
+tsset agecat period;
+gen change = D.uearnshare;
+foreach comp of local components {;
+	gen `comp'contribution = D.`comp'effect/D.uearnshare*100;
+};
+drop period;
