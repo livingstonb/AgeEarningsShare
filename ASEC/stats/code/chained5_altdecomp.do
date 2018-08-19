@@ -79,7 +79,7 @@ forvalues i=1/4 {;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMBINE COMPONENTS 2 AND 3;
-gen baseeffect = earnshare_1976 + component1;
+gen ageeeffect = earnshare_1976 + component1;
 gen ${adjustvar}effect = earnshare_1976 + component2 + component3;
 gen earningseffect = earnshare_1976 + component4;
 
@@ -98,7 +98,7 @@ foreach i in 18 25 35 45 55 65 {;
 		local genderconditions male==0 male==1;
 	};
 	foreach gcond of local genderconditions {;
-		local adjplots_age line baseeffect year if (agecat == `i') & `gcond' ||;
+		local adjplots_age line ageeffect year if (agecat == `i') & `gcond' ||;
 		local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') & `gcond' ||;
 		local adjplots_earnings line earningseffect year if (agecat == `i') & `gcond' ||;
 		local adjplots_unadjusted line uearnshare year if (agecat == `i') & `gcond' ||;
@@ -130,22 +130,3 @@ foreach i in 18 25 35 45 55 65 {;
 		};
 	};
 };
-
-////////////////////////////////////////////////////////////////////////////////
-* COMPUTE STATISTICS FOR TABLE;
-keep if year==1976 | year==2017;
-sort `gendervar' agecat year uearnshare *effect;
-keep `gendervar' agecat year uearnshare *effect;
-
-bysort `gendervar' agecat (year): gen period = _n;
-egen panelvar = group(`gendervar' agecat);
-tsset panelvar period;
-gen change = D.uearnshare;
-local components base $adjustvar earnings;
-foreach comp of local components {;
-	gen `comp'contribution = D.`comp'effect/D.uearnshare*100;
-};
-drop period panelvar;
-
-cd ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
-save ${adjustvar}_changes.dta, replace;

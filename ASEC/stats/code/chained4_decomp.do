@@ -117,20 +117,4 @@ foreach i in 18 25 35 45 55 65 {;
 	};
 };
 
-////////////////////////////////////////////////////////////////////////////////
-* COMPUTE STATISTICS FOR TABLE;
-keep if year==1976 | year==2017;
-sort `gendervar' agecat year uearnshare *effect;
-keep `gendervar' agecat year uearnshare *effect;
 
-bysort `gendervar' agecat (year): gen period = _n;
-egen panelvar = group(`gendervar' agecat);
-tsset panelvar period;
-gen change = D.uearnshare;
-foreach comp of local components {;
-	gen `comp'contribution = D.`comp'effect/D.uearnshare*100;
-};
-drop period panelvar;
-
-cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
-save ${adjustvar}_changes.dta, replace;

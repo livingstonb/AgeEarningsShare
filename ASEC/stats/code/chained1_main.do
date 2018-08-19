@@ -101,10 +101,14 @@ forvalues k=1/7 {;
 	
 	preserve;
 	do ${basedir}/stats/code/chained4_decomp.do;
+	global alt;
+	do ${basedir}/stats/code/chained_table.do;
 	restore;
 	
 	preserve;
 	do ${basedir}/stats/code/chained5_altdecomp.do;
+	global alt alt_;
+	do ${basedir}/stats/code/chained_table.do;
 	restore;
 	
 };	
