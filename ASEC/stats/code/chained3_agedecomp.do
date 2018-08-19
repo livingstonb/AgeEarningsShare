@@ -11,7 +11,7 @@ egen panelvar = group(agecat male);
 
 * Component associated with mean earnings;
 tsset panelvar year;
-gen 	sumterms = L.popsharejt*D.mearnsharejt;
+gen 	sumterms = L.popsharejt*D.mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat male (year): gen sumvar = sum(sumterms);
 gen	decomp_earnings = earnshare_1976 + sumvar;
@@ -19,7 +19,7 @@ drop sumterms sumvar;
 
 * Component associated with age share;
 tsset panelvar year;
-gen 	sumterms = D.popsharejt*mearnsharejt;
+gen 	sumterms = D.popsharejt*mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat male (year): gen sumvar = sum(sumterms);
 gen	decomp_age = earnshare_1976 + sumvar;

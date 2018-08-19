@@ -10,7 +10,7 @@ if $pooled == 1{;
 	
 	* Need to re-compute some statistics without grouping by male variable;
 	drop popjt popsharejt popshare_1976 earnjt uearnshare earnshare_1976
-		mearnjt mearnsharejt;
+		mearnjt mearn_jt_t;
 	* Population shares;
 	bysort year agecat: 	egen popjt = sum(asecwt);
 	gen popsharejt = popjt/popt;
@@ -23,7 +23,7 @@ if $pooled == 1{;
 
 	* Ratio of mean group earnings to mean population earnings;
 	gen mearnjt	= earnjt/popjt;
-	gen	mearnsharejt = mearnjt/mearnt;
+	gen	mearn_jt_t = mearnjt/mearnt;
 };
 else {;
 	local gendervar male;
@@ -37,7 +37,7 @@ gen popsharejkt = popjkt/popjt;
 * Ratio of mean group earnings to mean population earnings;
 bysort year agecat $adjustvar `gendervar': egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
-gen	mearnsharejkt = mearnjkt/mearnt;
+gen	mearn_jkt_t = mearnjkt/mearnt;
 
 duplicates drop agecat year $adjustvar `gendervar', force;
 
@@ -45,9 +45,9 @@ duplicates drop agecat year $adjustvar `gendervar', force;
 
 egen panelvar = group(agecat $adjustvar `gendervar');
 tsset panelvar year;
-gen innersumterms_age			= popsharejkt*mearnsharejkt;
-gen innersumterms_$adjustvar 	= D.popsharejkt*mearnsharejkt;
-gen innersumterms_earnings 		= L.popsharejkt*D.mearnsharejkt;
+gen innersumterms_age			= popsharejkt*mearn_jkt_t;
+gen innersumterms_$adjustvar 	= D.popsharejkt*mearn_jkt_t;
+gen innersumterms_earnings 		= L.popsharejkt*D.mearn_jkt_t;
 * Sum over values of $adjustvar;
 bysort year agecat `gendervar': egen innersums_age 		= sum(innersumterms_age);
 bysort year agecat `gendervar': egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
@@ -130,7 +130,7 @@ gen change = D.uearnshare;
 foreach comp of local components {;
 	gen `comp'contribution = D.`comp'effect/D.uearnshare*100;
 };
-drop period;
+drop period panelvar;
 
 cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
 save ${adjustvar}_changes.dta, replace;

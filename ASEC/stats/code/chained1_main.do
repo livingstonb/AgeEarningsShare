@@ -4,13 +4,7 @@ set more 1;
 cap mkdir ${basedir}/stats/output/unadjusted;
 cap mkdir ${basedir}/stats/output/agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
-cap mkdir ${basedir}/stats/output/chained_adjustments/college;
-cap mkdir ${basedir}/stats/output/chained_adjustments/hours;
-cap mkdir ${basedir}/stats/output/chained_adjustments/nonwhite;
-cap mkdir ${basedir}/stats/output/chained_adjustments/male;
-cap mkdir ${basedir}/stats/output/chained_adjustments/married;
-cap mkdir ${basedir}/stats/output/chained_adjustments/industry;
-cap mkdir ${basedir}/stats/output/chained_adjustments/ehrmi;
+cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 
 /* This do-file plots income share and adjusted income share for each age group
 over the years 1976-2017, using chained years */;
@@ -55,7 +49,7 @@ bysort agecat male (year): 	gen earnshare_1976 = uearnshare[1];
 * Ratio of mean group earnings to mean population earnings;
 gen mearnjt	= earnjt/popjt;
 gen	mearnt = earnt/popt;
-gen	mearnsharejt = mearnjt/mearnt;
+gen	mearn_jt_t = mearnjt/mearnt;
 
 
 * Plot unadjusted earnings shares;
@@ -89,12 +83,14 @@ local adjustlabels
 	Industry	
 	Educ/Hours/Race/Married/Industry
 	Gender;
-
+	
 egen ehrmi = group(college hours nonwhite married industry);
 
-forvalues k=1/6 {;
+forvalues k=1/7 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
+	cap mkdir ${basedir}/stats/output/chained_adjustments/`adjustvar';
+	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/`adjustvar';
 	
 	if "$adjustvar"=="gender" {;
 		global pooled 1;
@@ -106,5 +102,10 @@ forvalues k=1/6 {;
 	preserve;
 	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
+	
+	preserve;
+	do ${basedir}/stats/code/chained5_altdecomp.do;
+	restore;
+	
 };	
 
