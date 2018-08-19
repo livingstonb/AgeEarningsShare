@@ -14,7 +14,7 @@ tsset panelvar year;
 gen 	sumterms = L.popsharejt*D.mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat male (year): gen sumvar = sum(sumterms);
-gen	decomp_earnings = earnshare_1976 + sumvar;
+gen	earningseffect = earnshare_1976 + sumvar;
 drop sumterms sumvar;
 
 * Component associated with age share;
@@ -22,7 +22,7 @@ tsset panelvar year;
 gen 	sumterms = D.popsharejt*mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat male (year): gen sumvar = sum(sumterms);
-gen	decomp_age = earnshare_1976 + sumvar;
+gen	ageeffect = earnshare_1976 + sumvar;
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
@@ -30,8 +30,8 @@ gen	decomp_age = earnshare_1976 + sumvar;
 foreach i in 18 25 35 45 55 65 {;
 	* Loop over gender;
 	forvalues gind = 0/1 {;
-		local decompageplot line decomp_age year if (agecat==`i') & (male==`gind') ||;
-		local decompearningsplot line decomp_earnings year if (agecat==`i') & (male==`gind') ||;
+		local decompageplot line ageefect year if (agecat==`i') & (male==`gind') ||;
+		local decompearningsplot line earningseffect year if (agecat==`i') & (male==`gind') ||;
 		local unadjplot line uearnshare year if (agecat==`i') & (male==`gind') ||;
 		
 		graph twoway `decompageplot' `decompearningsplot' `unadjplot', 
