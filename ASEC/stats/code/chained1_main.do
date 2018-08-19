@@ -73,19 +73,38 @@ restore;
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Adjusted by only population shares;
 global pooled 0;
-local adjustvars 	college		hours 	nonwhite	married		industry 
-	ehrmi;
-local adjustlabels	College		Hours	Race		Married		Industry	
-	Educ/Hours/Race/Married/Industry;
+local adjustvars 	
+	college		
+	hours 	
+	nonwhite	
+	married		
+	industry 
+	ehrmi
+	male;
+local adjustlabels	
+	College		
+	Hours	
+	Race		
+	Married		
+	Industry	
+	Educ/Hours/Race/Married/Industry
+	Gender;
 
 egen ehrmi = group(college hours nonwhite married industry);
 
 forvalues k=1/6 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
+	
+	if "$adjustvar"=="gender" {;
+		global pooled 1;
+	};
+	else {;
+		global pooled 0;
+	};
+	
 	preserve;
 	do ${basedir}/stats/code/chained4_decomp.do;
 	restore;
 };	
 
-* Adjust by population shares and gender;

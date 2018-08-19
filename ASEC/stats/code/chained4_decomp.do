@@ -4,33 +4,58 @@
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
+if $pooled == 1{;
+	* Do not group by gender, use empty local variable instead of male variable;
+	local gendervar ;
+	
+	* Need to re-compute some statistics without grouping by male variable;
+	drop popjt popsharejt popshare_1976 earnjt uearnshare earnshare_1976
+		mearnjt mearnsharejt;
+	* Population shares;
+	bysort year agecat: 	egen popjt = sum(asecwt);
+	gen popsharejt = popjt/popt;
+	bysort agecat (year): 	gen popshare_1976 = popsharejt[1];
+
+	* Unadjusted earnings share for 1976;
+	bysort year agecat: 	egen earnjt = sum(asecwt*incwage);
+	gen uearnshare = earnjt/earnt;
+	bysort agecat (year): 	gen earnshare_1976 = uearnshare[1];
+
+	* Ratio of mean group earnings to mean population earnings;
+	gen mearnjt	= earnjt/popjt;
+	gen	mearnsharejt = mearnjt/mearnt;
+};
+else {;
+	local gendervar male;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
-bysort year agecat $adjustvar male: egen popjkt = sum(asecwt);
+bysort year agecat $adjustvar `gendervar': egen popjkt = sum(asecwt);
 gen popsharejkt = popjkt/popjt;
 
 * Ratio of mean group earnings to mean population earnings;
-bysort year agecat $adjustvar male: egen earnjkt = sum(asecwt*incwage);
+bysort year agecat $adjustvar `gendervar': egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 gen	mearnsharejkt = mearnjkt/mearnt;
 
-duplicates drop agecat year $adjustvar male, force;
+duplicates drop agecat year $adjustvar `gendervar', force;
 
 * Compute separate components of decomposition;
 
-egen panelvar = group(agecat $adjustvar male);
+egen panelvar = group(agecat $adjustvar `gendervar');
 tsset panelvar year;
 gen innersumterms_age			= popsharejkt*mearnsharejkt;
 gen innersumterms_$adjustvar 	= D.popsharejkt*mearnsharejkt;
 gen innersumterms_earnings 		= L.popsharejkt*D.mearnsharejkt;
 * Sum over values of $adjustvar;
-bysort year agecat male: egen innersums_age 		= sum(innersumterms_age);
-bysort year agecat male: egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
-bysort year agecat male: egen innersums_earnings 	= sum(innersumterms_earnings);
+bysort year agecat `gendervar': egen innersums_age 		= sum(innersumterms_age);
+bysort year agecat `gendervar': egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
+bysort year agecat `gendervar': egen innersums_earnings 	= sum(innersumterms_earnings);
 
-duplicates drop year agecat male, force;
+duplicates drop year agecat `gendervar', force;
 drop panelvar;
-egen panelvar = group(agecat male);
+egen panelvar = group(agecat `gendervar');
 tsset panelvar year;
 gen outersumterms_age			= D.popsharejt*innersums_age;
 gen outersumterms_$adjustvar	= L.popsharejt*innersums_$adjustvar;
@@ -39,7 +64,7 @@ local components age $adjustvar earnings;
 foreach comp of local components {;
 	replace outersumterms_`comp' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
-	bysort agecat male (year): gen sumvar_`comp' = sum(outersumterms_`comp');
+	bysort agecat `gendervar' (year): gen sumvar_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
 	gen `comp'effect = earnshare_1976 + sumvar_`comp';
 };
@@ -51,7 +76,13 @@ foreach comp of local components {;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-	local genderconditions male==0 male==1;
+	if $pooled == 1 {;
+		* Do not condition on gender, use true local variable;
+		local genderconditions 1;
+	};
+	else {;
+		local genderconditions male==0 male==1;
+	};
 	foreach gcond of local genderconditions {;
 		local adjplots_age line ageeffect year if (agecat == `i') & `gcond' ||;
 		local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') & `gcond' ||;
@@ -80,17 +111,20 @@ foreach i in 18 25 35 45 55 65 {;
 		else if "`gcond'"=="male==1"  {;
 			graph export ${adjustvar}`i'_men.png, replace;
 		};
+		else if `gcond'==1 {;
+			graph export ${adjustvar}`i'.png, replace;
+		};
 	};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE STATISTICS FOR TABLE;
 keep if year==1976 | year==2017;
-sort male agecat year uearnshare *effect;
-keep male agecat year uearnshare *effect;
+sort `gendervar' agecat year uearnshare *effect;
+keep `gendervar' agecat year uearnshare *effect;
 
-bysort male agecat (year): gen period = _n;
-egen panelvar = group(male agecat);
+bysort `gendervar' agecat (year): gen period = _n;
+egen panelvar = group(`gendervar' agecat);
 tsset panelvar period;
 gen change = D.uearnshare;
 foreach comp of local components {;
