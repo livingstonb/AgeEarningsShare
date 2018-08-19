@@ -26,8 +26,14 @@ bysort `gendervar' agecat (year): gen eshare1976 = uearnshare[1];
 bysort `gendervar' agecat (year): gen eshare2017 = uearnshare[2];
 drop if year == 1976;
 drop year *effect uearnshare;
-order `gendervar' agecat eshare1976 eshare2017 change agecontribution ${adjustvar}contribution
-	earningscontribution;
+if "$adjustvar"=="" {;
+	order `gendervar' agecat eshare1976 eshare2017 change agecontribution
+		earningscontribution;
+};
+else {;
+	order `gendervar' agecat eshare1976 eshare2017 change agecontribution ${adjustvar}contribution
+		earningscontribution;
+};
 sort `gendervar' agecat;
 drop `gendervar' agecat;
 xpose, clear varname;
@@ -49,6 +55,13 @@ foreach gend of local genders {;
 rename _varname quantity;
 order quantity;
 
-cd ${basedir}/stats/output/${alt}chained_adjustments/${adjustvar};
-save ${adjustvar}_changes.dta, replace;
+if "$adjustvar"=="" {;
+	cd ${basedir}/stats/output/agedecomp;
+	outsheet using ${alt}changes.csv, comma replace;
+};
+else {;
+	cd ${basedir}/stats/output/${alt}chained_adjustments/${adjustvar};
+	outsheet using ${alt}changes_${adjustvar}.csv, comma replace;
+};
+
 

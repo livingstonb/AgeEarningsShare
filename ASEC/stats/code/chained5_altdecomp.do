@@ -79,7 +79,7 @@ forvalues i=1/4 {;
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMBINE COMPONENTS 2 AND 3;
-gen ageeeffect = earnshare_1976 + component1;
+gen ageeffect = earnshare_1976 + component1;
 gen ${adjustvar}effect = earnshare_1976 + component2 + component3;
 gen earningseffect = earnshare_1976 + component4;
 

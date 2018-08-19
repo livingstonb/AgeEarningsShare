@@ -12,11 +12,9 @@ do ${basedir}/build/code/build.do;
 
 ////////////////////////////////////////////////////////////////////////////////
 * STATS DIRECTORY;
-* Plot income shares by age group and year;
-do ${basedir}/stats/code/incshare_plots.do;
 
 * Plot chained-weighted decomp of income shares, adjusting by various factors;
-do ${basedir}/stats/code/chained_incshares1.do;
+do ${basedir}/stats/code/chained1_main.do;
 
 * Plot demographic trends;
 do ${basedir}/stats/code/demographic_plots.do;
