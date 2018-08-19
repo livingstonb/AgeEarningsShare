@@ -95,7 +95,7 @@ forvalues k=1/7 {;
 	cap mkdir ${basedir}/stats/output/chained_adjustments/`adjustvar';
 	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/`adjustvar';
 	
-	if "$adjustvar"=="gender" {;
+	if "$adjustvar"=="male" {;
 		global pooled 1;
 	};
 	else {;
