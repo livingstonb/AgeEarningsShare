@@ -51,12 +51,15 @@ else {;
 	local suffix _${gender};
 };
 * Save location;
+cd ${basedir}/stats/output/tables/`prefix'chained_adjustments;
+
 if "$adjustvar"=="" {;
-	cd ${basedir}/stats/output/agedecomp;
-	outsheet using `prefix'changes_`suffix'.csv, comma replace;
+	outsheet using `prefix'changes_age`suffix'.csv, comma replace;
+};
+else if "${adjustvar}"=="male"{;
+	outsheet using `prefix'changes_gender`suffix'.csv, comma replace;
 };
 else {;
-	cd ${basedir}/stats/output/`prefix'chained_adjustments/${adjustvar};
 	outsheet using `prefix'changes_${adjustvar}`suffix'.csv, comma replace;
 };
 

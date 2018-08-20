@@ -5,6 +5,9 @@ cap mkdir ${basedir}/stats/output/unadjusted;
 cap mkdir ${basedir}/stats/output/agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
+cap mkdir ${basedir}/stats/output/tables;
+cap mkdir ${basedir}/stats/output/tables/chained_adjustments;
+cap mkdir ${basedir}/stats/output/tables/alt_chained_adjustments;
 
 /* This do-file calls chained2,chained3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
