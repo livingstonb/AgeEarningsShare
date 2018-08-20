@@ -85,7 +85,7 @@ foreach i in 18 25 35 45 55 65 {;
 			legend(span)
 			xsize(3.5)
 			ysize(3)
-			scale(1.6);
+			scale(1.4);
 		* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
 		
 		cd ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};

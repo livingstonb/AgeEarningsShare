@@ -46,7 +46,7 @@ foreach i in 18 25 35 45 55 65 {;
 		legend(span)
 		xsize(3.5)
 		ysize(3)
-		scale(1.5);
+		scale(1.4);
 
 	cd ${basedir}/stats/output/agedecomp;
 	graph export agedecomp`i'_${gender}.png, replace;

@@ -34,11 +34,14 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-preserve;
-global gender ;
-do ${basedir}/stats/code/chained_important_computations.do;
-do ${basedir}/stats/code/chained2_plotunadjusted.do;
-restore;
+local genders women men;
+foreach gend of local genders {;
+	preserve;
+	global gender `gend';
+	do ${basedir}/stats/code/chained_important_computations.do;
+	do ${basedir}/stats/code/chained2_plotunadjusted.do;
+	restore;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSE BY AGE GROUP ONLY;
@@ -70,7 +73,7 @@ local adjustlabels
 	Race		
 	Married		
 	Industry	
-	Educ/Hours/Race/Married/Industry
+	Ed/Hr/Race/Mar/Ind
 	Gender;
 	
 egen ehrmi = group(college hours nonwhite married industry);
@@ -87,16 +90,19 @@ forvalues k=1/7 {;
 	else {;
 		local genders women men;
 	};
-		
+	
+	* Loop over men and women unless decomposing by gender (in which case, pool);
 	foreach gend of local genders {;
 			global gender `gend';
-
+			
+			* 3-component decomposition;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained4_decomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 			
+			* alternate, 4-component decomposition;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained5_altdecomp.do;
