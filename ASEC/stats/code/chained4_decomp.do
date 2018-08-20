@@ -5,6 +5,7 @@ by the variable $adjustvar within age groups, over the years 1976-2017 using a
 chain-weighted decomposition */;
 
 global components age $adjustvar earnings;
+global alt 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
@@ -53,15 +54,16 @@ foreach comp of global components {;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-	local adjplots_age line age_effect year if (agecat == `i') ||;
-	local adjplots_$adjustvar line ${adjustvar}_effect year if (agecat == `i') ||;
-	local adjplots_earnings line earnings_effect year if (agecat == `i') ||;
-	local adjplots_unadjusted line uearnshare year if (agecat == `i') ||;
-
-	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
-		`adjplots_unadjusted',
-		legend(order(1 "Age Share Component" 2 "${adjustlabel}"
-			3 "Mean Earnings Component" 4 "Unadjusted Shares")) 
+	graph twoway 
+		line age_effect year if (agecat == `i') ||
+		line ${adjustvar}_effect year if (agecat == `i') ||
+		line earnings_effect year if (agecat == `i') ||
+		line uearnshare year if (agecat == `i') ||,
+		legend(order(
+			1 "Age Share Component" 
+			2 "${adjustlabel}"
+			3 "Mean Earnings Component" 
+			4 "Unadjusted Shares")) 
 		legend(cols(1))
 		graphregion(color(white)) xlabel(1976(10)2017)
 		xtitle("") ytitle("")
@@ -74,12 +76,7 @@ foreach i in 18 25 35 45 55 65 {;
 	* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
 	
 	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
-	if "$gender"=="pooled" {;
-		graph export ${adjustvar}`i'.png, replace;
-	};
-	else {;
-		graph export ${adjustvar}`i'_${gender}.png, replace;
-	};
+	graph export ${adjustvar}`i'_${gender}.png, replace;
 };
 
 

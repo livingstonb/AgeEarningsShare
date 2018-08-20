@@ -46,12 +46,6 @@ local genders women men;
 foreach gend of local genders {;
 	preserve;
 	global gender `gend';
-	if "$gender"=="women" {;
-		keep if male==0;
-	};
-	else if "$gender"=="men" {;
-		keep if male==1;
-	};
 	global adjustvar ;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained3_agedecomp.do;
@@ -63,7 +57,6 @@ foreach gend of local genders {;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Adjusted by only population shares;
-global pooled 0;
 local adjustvars 	
 	college		
 	hours 	
@@ -102,14 +95,12 @@ forvalues k=1/7 {;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained4_decomp.do;
-			global alt 0;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 			
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained5_altdecomp.do;
-			global alt 1;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 	};

@@ -5,6 +5,7 @@ by the variable $adjustvar within age groups, over the years 1976-2017 using a
 chain-weighted decomposition */;
 
 global components age ${adjustvar}1 ${adjustvar}2 earnings;
+global alt 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
@@ -66,7 +67,8 @@ foreach i in 18 25 35 45 55 65 {;
 			local paths `paths' line `comp'_effect year if agecat==`i' ||;
 		};
 
-		graph twoway `paths' || line uearnshare year if agecat==`i',
+		graph twoway `paths' || 
+			line uearnshare year if agecat==`i',
 			legend(order(
 				1 "Age Share Component" 
 				2 "${adjustlabel} (Overall)"
@@ -85,10 +87,5 @@ foreach i in 18 25 35 45 55 65 {;
 		* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
 		
 		cd ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
-		if "$gender"=="pooled" {;
-			graph export ${adjustvar}`i'.png, replace;
-		};
-		else {;
-			graph export ${adjustvar}`i'_${gender}.png, replace;
-		};
+		graph export ${adjustvar}`i'_${gender}.png, replace;
 };

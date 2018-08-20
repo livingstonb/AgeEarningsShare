@@ -29,13 +29,13 @@ gen	age_effect = earnshare_1976 + sumvar;
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
-foreach i in 18 25 35 45 55 65 {;
-	local decompageplot line age_effect year if (agecat==`i') ||;
-	local decompearningsplot line earnings_effect year if (agecat==`i') ||;
-	local unadjplot line uearnshare year if (agecat==`i') ||;
-	
-	graph twoway `decompageplot' `decompearningsplot' `unadjplot', 
-		legend(order(1 "Age Share Component" 2 "Mean Earnings Component"
+foreach i in 18 25 35 45 55 65 {;	
+	graph twoway 	line age_effect year if (agecat==`i') ||
+					line earnings_effect year if (agecat==`i') ||
+					line uearnshare year if (agecat==`i') ||,
+		legend(order(
+			1 "Age Share Component" 
+			2 "Mean Earnings Component"
 			3 "Unadjusted Shares")) 
 		legend(cols(1))
 		graphregion(color(white)) xlabel(1976(10)2017)
@@ -48,10 +48,5 @@ foreach i in 18 25 35 45 55 65 {;
 		scale(1.5);
 
 	cd ${basedir}/stats/output/agedecomp;
-	if "$gender"=="pooled" {;
-		graph export agedecomp`i'.png, replace;
-	};
-	else {;
-		graph export agedecomp`i'_${gender}.png, replace;
-	};
+	graph export agedecomp`i'_${gender}.png, replace;
 };
