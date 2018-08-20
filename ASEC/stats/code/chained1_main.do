@@ -6,8 +6,8 @@ cap mkdir ${basedir}/stats/output/agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 
-/* This do-file plots income share and adjusted income share for each age group
-over the years 1976-2017, using chained years */;
+/* This do-file calls chained2,chained3,... to compute and plot income share
+decompositions over the years 1976-2017 */;
 
 use ${basedir}/build/output/ASEC.dta;
 
@@ -49,7 +49,6 @@ foreach gend of local genders {;
 	global adjustvar ;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained3_agedecomp.do;
-	global alt 0;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
 };

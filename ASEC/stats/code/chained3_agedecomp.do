@@ -1,18 +1,19 @@
 #delimit;
 
-/* This do-file plots income share adjusted by population shares for each age group
+/* Plots income share adjusted by population shares for each age group
 over the years 1976-2017, using a chain-weighted decomposition */;
 
+* Announce decomposition components for chained_table.do;
 global components age earnings;
+* Declare that this is NOT the alternate decomposition;
+global alt 0;
 
 duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-egen panelvar = group(agecat);
-
 * Component associated with mean earnings;
-tsset panelvar year;
+tsset agecat year;
 gen 	sumterms = L.popsharejt*D.mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
@@ -20,7 +21,7 @@ gen	earnings_effect = earnshare_1976 + sumvar;
 drop sumterms sumvar;
 
 * Component associated with age share;
-tsset panelvar year;
+tsset agecat year;
 gen 	sumterms = D.popsharejt*mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);

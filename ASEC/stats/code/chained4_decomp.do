@@ -1,10 +1,12 @@
 #delimit;
 
-/* This do-file plots income shares adjusted by the age distribution and adjusted
-by the variable $adjustvar within age groups, over the years 1976-2017 using a 
+/* Plots income shares decomposed by the age distribution and adjusted and the 
+variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
+* Announce decomposition components for chained_table.do;
 global components age $adjustvar earnings;
+* Declare that this is NOT the alternate decomposition;
 global alt 0;
 
 ////////////////////////////////////////////////////////////////////////////////
