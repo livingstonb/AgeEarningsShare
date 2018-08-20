@@ -84,7 +84,7 @@ forvalues k=1/7 {;
 	cap mkdir ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
 	
-	if "$adjustvar"=="gender" {;
+	if "$adjustvar"=="male" {;
 		local genders pooled;
 	};
 	else {;
@@ -94,17 +94,17 @@ forvalues k=1/7 {;
 	* Loop over men and women unless decomposing by gender (in which case, pool);
 	foreach gend of local genders {;
 			global gender `gend';
+			* Compute unadjusted shares and grouped mean earnings;
+			do ${basedir}/stats/code/chained_important_computations.do;
 			
 			* 3-component decomposition;
 			preserve;
-			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained4_decomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 			
 			* alternate, 4-component decomposition;
 			preserve;
-			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained5_altdecomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
