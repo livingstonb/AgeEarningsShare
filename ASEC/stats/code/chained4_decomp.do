@@ -4,6 +4,8 @@
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
+global components age $adjustvar earnings;
+
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
 bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
@@ -35,13 +37,13 @@ tsset panelvar year;
 gen outersumterms_age			= D.popsharejt*innersums_age;
 gen outersumterms_$adjustvar	= L.popsharejt*innersums_$adjustvar;
 gen outersumterms_earnings 		= L.popsharejt*innersums_earnings;
-local components age $adjustvar earnings;
-foreach comp of local components {;
+
+foreach comp of global components {;
 	replace outersumterms_`comp' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
 	bysort agecat(year): gen sumvar_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
-	gen `comp'effect = earnshare_1976 + sumvar_`comp';
+	gen `comp'_effect = earnshare_1976 + sumvar_`comp';
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -51,9 +53,9 @@ foreach comp of local components {;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-	local adjplots_age line ageeffect year if (agecat == `i') ||;
-	local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') ||;
-	local adjplots_earnings line earningseffect year if (agecat == `i') ||;
+	local adjplots_age line age_effect year if (agecat == `i') ||;
+	local adjplots_$adjustvar line ${adjustvar}_effect year if (agecat == `i') ||;
+	local adjplots_earnings line earnings_effect year if (agecat == `i') ||;
 	local adjplots_unadjusted line uearnshare year if (agecat == `i') ||;
 
 	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'

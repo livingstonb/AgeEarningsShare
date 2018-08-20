@@ -4,6 +4,8 @@
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
+global components age ${adjustvar}1 ${adjustvar}2 earnings;
+
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
 bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
@@ -39,24 +41,18 @@ duplicates drop year agecat, force;
 drop panelvar;
 egen panelvar = group(agecat);
 tsset panelvar year;
-gen outersumterms1 = D.popsharejt*innersum1;
-gen outersumterms2 = L.popsharejt*innersum2;
-gen outersumterms3 = L.popsharejt*innersum3;
-gen outersumterms4 = L.popsharejt*innersum4;
+gen outersumterms_age = D.popsharejt*innersum1;
+gen outersumterms_${adjustvar}1 = L.popsharejt*innersum2;
+gen outersumterms_${adjustvar}2 = L.popsharejt*innersum3;
+gen outersumterms_earnings = L.popsharejt*innersum4;
 
-forvalues i=1/4 {;
-	replace outersumterms`i' = 0 if year == 1976;
+foreach comp of global components {;
+	replace outersumterms_`comp' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
-	bysort agecat (year): gen component`i' = sum(outersumterms`i');
+	bysort agecat (year): gen term_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
-	gen path`i' = earnshare_1976 + component`i';
+	gen `comp'_effect = earnshare_1976 + term_`comp';
 };
-
-////////////////////////////////////////////////////////////////////////////////
-* COMBINE COMPONENTS 2 AND 3;
-gen ageeffect = earnshare_1976 + component1;
-gen ${adjustvar}effect = earnshare_1976 + component2 + component3;
-gen earningseffect = earnshare_1976 + component4;
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS;
@@ -65,17 +61,18 @@ gen earningseffect = earnshare_1976 + component4;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-		forvalues j=1/4 {;
-			local paths `paths' line path`j' year if agecat==`i' ||;
+		local paths;
+		foreach comp of global components {;
+			local paths `paths' line `comp'_effect year if agecat==`i' ||;
 		};
 
-		graph twoway `paths',
+		graph twoway `paths' || line uearnshare year if agecat==`i',
 			legend(order(
 				1 "Age Share Component" 
 				2 "${adjustlabel} (Overall)"
-				3 "${adjustlabel} (Cond'l on Age)"
+				3 "${adjustlabel} (Cond'l)"
 				4 "Mean Earnings Component" 
-				5 "Unadjusted Shares")) 
+				5 "Unadjusted Shares"))
 			legend(cols(1))
 			graphregion(color(white)) xlabel(1976(10)2017)
 			xtitle("") ytitle("")

@@ -11,8 +11,8 @@ egen panelvar = group(agecat);
 tsset panelvar period;
 gen change = D.uearnshare;
 local components age $adjustvar earnings;
-foreach comp of local components {;
-	gen `comp'contribution = D.`comp'effect/D.uearnshare*100;
+foreach comp of global components {;
+	gen `comp'_contribution = D.`comp'_effect/D.uearnshare*100;
 };
 drop period panelvar;
 
@@ -20,14 +20,8 @@ bysort agecat (year): gen eshare1976 = uearnshare[1];
 bysort agecat (year): gen eshare2017 = uearnshare[2];
 drop if year == 1976;
 drop year *effect uearnshare;
-if "$adjustvar"=="" {;
-	order agecat eshare1976 eshare2017 change agecontribution
-		earningscontribution;
-};
-else {;
-	order  agecat eshare1976 eshare2017 change agecontribution ${adjustvar}contribution
-		earningscontribution;
-};
+order agecat eshare1976 eshare2017 change *contribution;
+
 sort agecat;
 drop agecat;
 xpose, clear varname;
@@ -41,26 +35,28 @@ foreach i of numlist 18 25 35 45 55 65 {;
 rename _varname quantity;
 order quantity;
 
+if $alt == 0 {;
+	local prefix ;
+};
+else if $alt == 1 {;
+	local prefix alt_;
+};
+
 if "$adjustvar"=="" {;
 	cd ${basedir}/stats/output/agedecomp;
-	outsheet using ${alt}changes_${gender}.csv, comma replace;
+	outsheet using `prefix'changes_${gender}.csv, comma replace;
 };
 else {;
-	cd ${basedir}/stats/output/${alt}chained_adjustments/${adjustvar};
-	
-	if $alt == 0 {;
-		local prefix ;
-	};
-	else if $alt == 1 {;
-		local prefix alt_;
-	};
+	cd ${basedir}/stats/output/`prefix'chained_adjustments/${adjustvar};
 	
 	if "$gender"=="pooled" {;
-		outsheet using `prefix'changes_${adjustvar}.csv, comma replace;
+		local suffix ;
 	};
 	else {;
-		outsheet using `prefix'changes_${adjustvar}_${gender}.csv, comma replace;
+		local suffix _${gender};
 	};
+	
+	outsheet using `prefix'changes_${adjustvar}`suffix'.csv, comma replace;
 };
 
 

@@ -1,5 +1,12 @@
 #delimit;
 
+if "$gender"=="women" {;
+	keep if male==0;
+};
+else if "$gender"=="men" {;
+	keep if male==1;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 * UNADJUSTED  SHARES AND IMPORTANT STATISTICS;
 * Population shares;
