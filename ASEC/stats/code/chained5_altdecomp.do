@@ -65,15 +65,17 @@ gen earningseffect = earnshare_1976 + component4;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-		local adjplots_age line ageeffect year if (agecat == `i') ||;
-		local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') ||;
-		local adjplots_earnings line earningseffect year if (agecat == `i') ||;
-		local adjplots_unadjusted line uearnshare year if (agecat == `i') ||;
+		forvalues j=1/4 {;
+			local paths `paths' line path`j' year if agecat==`i' ||;
+		};
 
-		graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
-			`adjplots_unadjusted',
-			legend(order(1 "Age Share Component" 2 "${adjustlabel}"
-				3 "Mean Earnings Component" 4 "Unadjusted Shares")) 
+		graph twoway `paths',
+			legend(order(
+				1 "Age Share Component" 
+				2 "${adjustlabel} (Overall)"
+				3 "${adjustlabel} (Cond'l on Age)"
+				4 "Mean Earnings Component" 
+				5 "Unadjusted Shares")) 
 			legend(cols(1))
 			graphregion(color(white)) xlabel(1976(10)2017)
 			xtitle("") ytitle("")
