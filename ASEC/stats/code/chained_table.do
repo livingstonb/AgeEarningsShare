@@ -53,10 +53,10 @@ else {;
 * Save location;
 if "$adjustvar"=="" {;
 	cd ${basedir}/stats/output/agedecomp;
+	outsheet using `prefix'changes_`suffix'.csv, comma replace;
 };
 else {;
 	cd ${basedir}/stats/output/`prefix'chained_adjustments/${adjustvar};
+	outsheet using `prefix'changes_${adjustvar}`suffix'.csv, comma replace;
 };
-
-outsheet using `prefix'changes_${adjustvar}`suffix'.csv, comma replace;
 
