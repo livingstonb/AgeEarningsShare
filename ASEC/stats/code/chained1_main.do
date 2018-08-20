@@ -33,38 +33,31 @@ replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
-* UNADJUSTED  SHARES AND IMPORTANT STATISTICS;
-* Population shares;
-bysort year agecat male: 	egen popjt = sum(asecwt);
-by year: 					egen popt = sum(asecwt);
-gen popsharejt = popjt/popt;
-bysort agecat male (year): 	gen popshare_1976 = popsharejt[1];
-
-* Unadjusted earnings share for 1976;
-bysort year agecat male: 	egen earnjt = sum(asecwt*incwage);
-by year: 					egen earnt = sum(asecwt*incwage);
-gen uearnshare = earnjt/earnt;
-bysort agecat male (year): 	gen earnshare_1976 = uearnshare[1];
-
-* Ratio of mean group earnings to mean population earnings;
-gen mearnjt	= earnjt/popjt;
-gen	mearnt = earnt/popt;
-gen	mearn_jt_t = mearnjt/mearnt;
-
-
 * Plot unadjusted earnings shares;
 preserve;
+do ${basedir}/stats/code/chained_important_computations.do;
 do ${basedir}/stats/code/chained2_plotunadjusted.do;
 restore;
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSE BY AGE GROUP ONLY;
-preserve;
-global adjustvar ;
-do ${basedir}/stats/code/chained3_agedecomp.do;
-global alt ;
-do ${basedir}/stats/code/chained_table.do;
-restore;
+local genders women men;
+foreach gend of local genders {;
+	preserve;
+	global gender `gend';
+	if "$gender"=="women" {;
+		keep if male==0;
+	};
+	else if "$gender"=="men" {;
+		keep if male==1;
+	};
+	global adjustvar ;
+	do ${basedir}/stats/code/chained_important_computations.do;
+	do ${basedir}/stats/code/chained3_agedecomp.do;
+	global alt ;
+	do ${basedir}/stats/code/chained_table.do;
+	restore;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
@@ -92,27 +85,45 @@ egen ehrmi = group(college hours nonwhite married industry);
 forvalues k=1/7 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
-	cap mkdir ${basedir}/stats/output/chained_adjustments/`adjustvar';
-	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/`adjustvar';
+	cap mkdir ${basedir}/stats/output/chained_adjustments/${adjustvar};
+	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
 	
-	if "$adjustvar"=="male" {;
-		global pooled 1;
+	if "$adjustvar"=="gender" {;
+		local genders pooled;
 	};
 	else {;
-		global pooled 0;
+		local genders women men;
 	};
-	
-	preserve;
-	do ${basedir}/stats/code/chained4_decomp.do;
-	global alt;
-	do ${basedir}/stats/code/chained_table.do;
-	restore;
-	
-	preserve;
-	do ${basedir}/stats/code/chained5_altdecomp.do;
-	global alt alt_;
-	do ${basedir}/stats/code/chained_table.do;
-	restore;
+		
+	foreach gend of local genders {;
+			global gender `gend';
+
+			preserve;
+			if "$gender"=="women" {;
+				keep if male==0;
+			};
+			else if "$gender"=="men" {;
+				keep if male==1;
+			};
+			do ${basedir}/stats/code/chained_important_computations.do;
+			do ${basedir}/stats/code/chained4_decomp.do;
+			global alt;
+			do ${basedir}/stats/code/chained_table.do;
+			restore;
+			
+			preserve;
+			if "$gender"=="women" {;
+				keep if male==0;
+			};
+			else if "$gender"=="men" {;
+				keep if male==1;
+			};
+			do ${basedir}/stats/code/chained_important_computations.do;
+			do ${basedir}/stats/code/chained5_altdecomp.do;
+			global alt alt_;
+			do ${basedir}/stats/code/chained_table.do;
+			restore;
+	};
 	
 };	
 

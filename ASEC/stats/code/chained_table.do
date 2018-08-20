@@ -1,19 +1,13 @@
 #delimit;
 
 ////////////////////////////////////////////////////////////////////////////////
-if $pooled == 1 {;
-	local gendervar;
-};
-else {;
-	local gendervar male;
-};
 
 * COMPUTE STATISTICS FOR TABLE;
 keep if year==1976 | year==2017;
-keep `gendervar' agecat year uearnshare *effect;
+keep agecat year uearnshare *effect;
 
-bysort `gendervar' agecat (year): gen period = _n;
-egen panelvar = group(`gendervar' agecat);
+bysort  agecat (year): gen period = _n;
+egen panelvar = group(agecat);
 tsset panelvar period;
 gen change = D.uearnshare;
 local components age $adjustvar earnings;
@@ -22,34 +16,26 @@ foreach comp of local components {;
 };
 drop period panelvar;
 
-bysort `gendervar' agecat (year): gen eshare1976 = uearnshare[1];
-bysort `gendervar' agecat (year): gen eshare2017 = uearnshare[2];
+bysort agecat (year): gen eshare1976 = uearnshare[1];
+bysort agecat (year): gen eshare2017 = uearnshare[2];
 drop if year == 1976;
 drop year *effect uearnshare;
 if "$adjustvar"=="" {;
-	order `gendervar' agecat eshare1976 eshare2017 change agecontribution
+	order agecat eshare1976 eshare2017 change agecontribution
 		earningscontribution;
 };
 else {;
-	order `gendervar' agecat eshare1976 eshare2017 change agecontribution ${adjustvar}contribution
+	order  agecat eshare1976 eshare2017 change agecontribution ${adjustvar}contribution
 		earningscontribution;
 };
-sort `gendervar' agecat;
-drop `gendervar' agecat;
+sort agecat;
+drop agecat;
 xpose, clear varname;
-if $pooled == 1 {;
-	local genders pooled;
-};
-else {;
-	local genders female male;
-};
-set varabbrev off;
+
 local k = 1;
-foreach gend of local genders {;
-	foreach i of numlist 18 25 35 45 55 65 {;
-		rename v`k' `gend'`i';
-		local k = `k' + 1;
-	};
+foreach i of numlist 18 25 35 45 55 65 {;
+	rename v`k' ${gender}`i';
+	local k = `k' + 1;
 };
 
 rename _varname quantity;
@@ -57,11 +43,16 @@ order quantity;
 
 if "$adjustvar"=="" {;
 	cd ${basedir}/stats/output/agedecomp;
-	outsheet using ${alt}changes.csv, comma replace;
+	outsheet using ${alt}changes_${gender}.csv, comma replace;
 };
 else {;
 	cd ${basedir}/stats/output/${alt}chained_adjustments/${adjustvar};
-	outsheet using ${alt}changes_${adjustvar}.csv, comma replace;
+	if "$gender"=="pooled" {;
+		outsheet using ${alt}changes_${adjustvar}.csv, comma replace;
+	};
+	else {;
+		outsheet using ${alt}changes_${adjustvar}_${gender}.csv, comma replace;
+	};
 };
 
 

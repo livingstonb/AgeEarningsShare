@@ -4,58 +4,33 @@
 by the variable $adjustvar within age groups, over the years 1976-2017 using a 
 chain-weighted decomposition */;
 
-if $pooled == 1{;
-	* Do not group by gender, use empty local variable instead of male variable;
-	local gendervar ;
-	
-	* Need to re-compute some statistics without grouping by male variable;
-	drop popjt popsharejt popshare_1976 earnjt uearnshare earnshare_1976
-		mearnjt mearn_jt_t;
-	* Population shares;
-	bysort year agecat: 	egen popjt = sum(asecwt);
-	gen popsharejt = popjt/popt;
-	bysort agecat (year): 	gen popshare_1976 = popsharejt[1];
-
-	* Unadjusted earnings share for 1976;
-	bysort year agecat: 	egen earnjt = sum(asecwt*incwage);
-	gen uearnshare = earnjt/earnt;
-	bysort agecat (year): 	gen earnshare_1976 = uearnshare[1];
-
-	* Ratio of mean group earnings to mean population earnings;
-	gen mearnjt	= earnjt/popjt;
-	gen	mearn_jt_t = mearnjt/mearnt;
-};
-else {;
-	local gendervar male;
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
-bysort year agecat $adjustvar `gendervar': egen popjkt = sum(asecwt);
+bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
 gen popsharejkt = popjkt/popjt;
 
 * Ratio of mean group earnings to mean population earnings;
-bysort year agecat $adjustvar `gendervar': egen earnjkt = sum(asecwt*incwage);
+bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 gen	mearn_jkt_t = mearnjkt/mearnt;
 
-duplicates drop agecat year $adjustvar `gendervar', force;
+duplicates drop agecat year $adjustvar, force;
 
 * Compute separate components of decomposition;
 
-egen panelvar = group(agecat $adjustvar `gendervar');
+egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 gen innersumterms_age			= popsharejkt*mearn_jkt_t;
 gen innersumterms_$adjustvar 	= D.popsharejkt*mearn_jkt_t;
 gen innersumterms_earnings 		= L.popsharejkt*D.mearn_jkt_t;
 * Sum over values of $adjustvar;
-bysort year agecat `gendervar': egen innersums_age 		= sum(innersumterms_age);
-bysort year agecat `gendervar': egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
-bysort year agecat `gendervar': egen innersums_earnings 	= sum(innersumterms_earnings);
+bysort year agecat: egen innersums_age 		= sum(innersumterms_age);
+bysort year agecat: egen innersums_$adjustvar 	= sum(innersumterms_$adjustvar);
+bysort year agecat: egen innersums_earnings 	= sum(innersumterms_earnings);
 
-duplicates drop year agecat `gendervar', force;
+duplicates drop year agecat, force;
 drop panelvar;
-egen panelvar = group(agecat `gendervar');
+egen panelvar = group(agecat);
 tsset panelvar year;
 gen outersumterms_age			= D.popsharejt*innersums_age;
 gen outersumterms_$adjustvar	= L.popsharejt*innersums_$adjustvar;
@@ -64,7 +39,7 @@ local components age $adjustvar earnings;
 foreach comp of local components {;
 	replace outersumterms_`comp' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
-	bysort agecat `gendervar' (year): gen sumvar_`comp' = sum(outersumterms_`comp');
+	bysort agecat(year): gen sumvar_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
 	gen `comp'effect = earnshare_1976 + sumvar_`comp';
 };
@@ -76,44 +51,32 @@ foreach comp of local components {;
 local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 55-64" 6 "Ages 65+";
 
 foreach i in 18 25 35 45 55 65 {;
-	if $pooled == 1 {;
-		* Do not condition on gender, use true local variable;
-		local genderconditions 1;
+	local adjplots_age line ageeffect year if (agecat == `i') ||;
+	local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') ||;
+	local adjplots_earnings line earningseffect year if (agecat == `i') ||;
+	local adjplots_unadjusted line uearnshare year if (agecat == `i') ||;
+
+	graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
+		`adjplots_unadjusted',
+		legend(order(1 "Age Share Component" 2 "${adjustlabel}"
+			3 "Mean Earnings Component" 4 "Unadjusted Shares")) 
+		legend(cols(1))
+		graphregion(color(white)) xlabel(1976(10)2017)
+		xtitle("") ytitle("")
+		legend(region(lcolor(white)))
+		bgcolor(white)
+		legend(span)
+		xsize(3.5)
+		ysize(3)
+		scale(1.6);
+	* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
+	
+	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
+	if "$gender"=="pooled" {;
+		graph export ${adjustvar}`i'.png, replace;
 	};
 	else {;
-		local genderconditions male==0 male==1;
-	};
-	foreach gcond of local genderconditions {;
-		local adjplots_age line ageeffect year if (agecat == `i') & `gcond' ||;
-		local adjplots_$adjustvar line ${adjustvar}effect year if (agecat == `i') & `gcond' ||;
-		local adjplots_earnings line earningseffect year if (agecat == `i') & `gcond' ||;
-		local adjplots_unadjusted line uearnshare year if (agecat == `i') & `gcond' ||;
-
-		graph twoway `adjplots_age' `adjplots_${adjustvar}' `adjplots_earnings'
-			`adjplots_unadjusted',
-			legend(order(1 "Age Share Component" 2 "${adjustlabel}"
-				3 "Mean Earnings Component" 4 "Unadjusted Shares")) 
-			legend(cols(1))
-			graphregion(color(white)) xlabel(1976(10)2017)
-			xtitle("") ytitle("")
-			legend(region(lcolor(white)))
-			bgcolor(white)
-			legend(span)
-			xsize(3.5)
-			ysize(3)
-			scale(1.6);
-		* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
-		
-		cd ${basedir}/stats/output/chained_adjustments/${adjustvar};
-		if "`gcond'"=="male==0" {;
-			graph export ${adjustvar}`i'_women.png, replace;
-		};
-		else if "`gcond'"=="male==1"  {;
-			graph export ${adjustvar}`i'_men.png, replace;
-		};
-		else if `gcond'==1 {;
-			graph export ${adjustvar}`i'.png, replace;
-		};
+		graph export ${adjustvar}`i'_${gender}.png, replace;
 	};
 };
 
