@@ -107,7 +107,7 @@ forvalues k=1/7 {;
 			};
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained4_decomp.do;
-			global alt;
+			global alt 0;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 			
@@ -120,7 +120,7 @@ forvalues k=1/7 {;
 			};
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained5_altdecomp.do;
-			global alt alt_;
+			global alt 1;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
 	};

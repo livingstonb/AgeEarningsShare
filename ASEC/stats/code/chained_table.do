@@ -47,11 +47,19 @@ if "$adjustvar"=="" {;
 };
 else {;
 	cd ${basedir}/stats/output/${alt}chained_adjustments/${adjustvar};
+	
+	if $alt == 0 {;
+		local prefix ;
+	};
+	else if $alt == 1 {;
+		local prefix alt_;
+	};
+	
 	if "$gender"=="pooled" {;
-		outsheet using ${alt}changes_${adjustvar}.csv, comma replace;
+		outsheet using `prefix'changes_${adjustvar}.csv, comma replace;
 	};
 	else {;
-		outsheet using ${alt}changes_${adjustvar}_${gender}.csv, comma replace;
+		outsheet using `prefix'changes_${adjustvar}_${gender}.csv, comma replace;
 	};
 };
 
