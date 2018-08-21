@@ -95,6 +95,9 @@ foreach gend of local genders {;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Adjusted by only population shares;
+* ehrmi = education/hours/race/married/industry;
+* erms = education/race/married/service sector;
+
 local adjustvars 	
 	college		
 	hours 	
@@ -102,6 +105,8 @@ local adjustvars
 	married		
 	industry 
 	ehrmi
+	services
+	erms
 	male;
 local adjustlabels	
 	College		
@@ -110,9 +115,12 @@ local adjustlabels
 	Married		
 	Industry	
 	Ed/Hr/Race/Mar/Ind
+	Services
+	Educ/Race/Mar/Serv
 	Gender;
 	
 egen ehrmi = group(college hours nonwhite married industry);
+egn erms = group(college nonwhite married services);
 
 forvalues k=1/7 {;
 	global adjustvar : word `k' of `adjustvars';
