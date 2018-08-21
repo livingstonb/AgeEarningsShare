@@ -5,7 +5,8 @@ variable $adjustvar within age groups, over the years 1976-2017 using an
 alternate chain-weighted decomposition */;
 
 * Announce decomposition components for chained_table.do;
-global components age ${adjustvar}1 ${adjustvar}2 earnings;
+global components age ${adjustvar} earnings;
+* global components age ${adjustvar}1 ${adjustvar}2 earnings;
 * Declare that this IS the alternate decomposition;
 global alt 1;
 
@@ -45,8 +46,9 @@ drop panelvar;
 egen panelvar = group(agecat);
 tsset panelvar year;
 gen outersumterms_age = D.popsharejt*innersum1;
-gen outersumterms_${adjustvar}1 = L.popsharejt*innersum2;
-gen outersumterms_${adjustvar}2 = L.popsharejt*innersum3;
+gen outersumterms_${adjustvar} = L.popsharejt*(innersum2+innersum3);
+* gen outersumterms_${adjustvar}1 = L.popsharejt*innersum2;
+* gen outersumterms_${adjustvar}2 = L.popsharejt*innersum3;
 gen outersumterms_earnings = L.popsharejt*innersum4;
 
 foreach comp of global components {;
@@ -73,10 +75,9 @@ foreach i in 18 25 35 45 55 65 {;
 			line uearnshare year if agecat==`i',
 			legend(order(
 				1 "Age Share Component" 
-				2 "${adjustlabel} (Overall)"
-				3 "${adjustlabel} (Cond'l)"
-				4 "Mean Earnings Component" 
-				5 "Unadjusted Shares"))
+				2 "${adjustlabel}"
+				3 "Mean Earnings Component" 
+				4 "Unadjusted Shares"))
 			legend(cols(1))
 			graphregion(color(white)) xlabel(1976(10)2017)
 			xtitle("") ytitle("")
@@ -87,6 +88,8 @@ foreach i in 18 25 35 45 55 65 {;
 			ysize(3)
 			scale(1.4);
 		* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
+		* 2 "${adjustlabel} (Overall)";
+		* 3 "${adjustlabel} (Cond'l)";
 		
 		cd ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
 		graph export ${adjustvar}`i'_${gender}.png, replace;

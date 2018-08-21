@@ -23,6 +23,11 @@ bysort year agecat: 	egen earnjt = sum(asecwt*incwage);
 by year: 				egen earnt = sum(asecwt*incwage);
 gen uearnshare = earnjt/earnt;
 bysort agecat (year): 	gen earnshare_1976 = uearnshare[1];
+* Move some plots to zero for 1976;
+if $zero_plots == 1 {;
+	replace uearnshare = uearnshare - earnshare_1976;
+	replace earnshare_1976 = 0;
+};
 
 * Ratio of mean group earnings to mean population earnings;
 gen mearnjt	= earnjt/popjt;
