@@ -17,7 +17,7 @@ tsset agecat year;
 gen 	sumterms = L.popsharejt*D.mearn_jt_t;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen	earnings_effect = earnshare_1976 + sumvar;
+gen	earnings_effect =  sumvar;
 drop sumterms sumvar;
 
 * Component associated with age share;
@@ -25,7 +25,7 @@ tsset agecat year;
 gen 	sumterms = L.mearn_jt_t*D.popsharejt;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen	age_effect = earnshare_1976 + sumvar;
+gen	age_effect = sumvar;
 drop sumterms sumvar;
 
 * Covariance term;
@@ -33,7 +33,7 @@ tsset agecat year;
 gen 	sumterms = D.mearn_jt_t*D.popsharejt;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen covariance_term = earnshare_1976 + sumvar;
+gen covariance_term = sumvar;
 drop sumterms sumvar;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ foreach i in 18 25 35 45 55 65 {;
 	graph twoway	line earnings_effect year if (agecat==`i'), $line4  ||
 					line covariance_term year if (agecat==`i'), $line3  ||
 					line age_effect year if (agecat==`i'), $line2  ||
-					line uearnshare year if (agecat==`i'), $line1 ||,
+					line zeroed_uearnshare year if (agecat==`i'), $line1 ||,
 		legend(order(
 			1 "Mean Earnings Component" 
 			2 "Covariance Component"

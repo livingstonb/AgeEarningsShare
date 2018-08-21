@@ -64,8 +64,7 @@ foreach gend of local genders {;
 	preserve;
 	* Set gender for computations;
 	global gender `gend';
-	* Do not shift plots to zero out first x-value;
-	global zero_plots 0;
+	
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained2_plotunadjusted.do;
 	restore;
@@ -77,7 +76,6 @@ local genders women men;
 foreach gend of local genders {;
 	global gender `gend';
 	global adjustvar ;
-	global zero_plots 1;
 	
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
@@ -120,12 +118,12 @@ local adjustlabels
 	Gender;
 	
 egen ehrmi = group(college hours nonwhite married industry);
-egn erms = group(college nonwhite married services);
+egen erms = group(college nonwhite married services);
 
 forvalues k=1/7 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
-	global zero_plots 1;
+
 	cap mkdir ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
 	

@@ -56,7 +56,7 @@ foreach comp of global components {;
 	* Sum from t0+1 to year of observation;
 	bysort agecat (year): gen term_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
-	gen `comp'_effect = earnshare_1976 + term_`comp';
+	gen `comp'_effect = term_`comp';
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ foreach i in 18 25 35 45 55 65 {;
 			line earnings_effect year if agecat ==`i', $line4 ||
 			line age_effect year if agecat==`i', $line3 ||
 			line ${adjustvar}_effect year if agecat==`i', $line2 ||
-			line uearnshare year if agecat==`i', $line1 ||,
+			line zeroed_uearnshare year if agecat==`i', $line1 ||,
 			legend(order(
 				1 "Mean Earnings Component" 
 				2 "Age Share Component" 
