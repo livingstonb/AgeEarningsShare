@@ -36,6 +36,25 @@ replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
+* SET PLOT FORMAT;
+global plot_options 
+		legend(cols(1))
+		graphregion(color(white)) xlabel(1976(10)2017)
+		xtitle("") ytitle("")
+		legend(region(lcolor(white)))
+		bgcolor(white)
+		legend(span)
+		xsize(3.5)
+		ysize(3)
+		scale(1.4);
+
+global linethickness medthick;
+global darkest lwidth(${linethickness}) lcolor(gs0);
+global darker lwidth(${linethickness}) lcolor(gs6);
+global lighter lwidth(${linethickness}) lcolor(gs10);
+global lightest lwidth(${linethickness}) lcolor(gs13);
+
+////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
 local genders women men;
 foreach gend of local genders {;

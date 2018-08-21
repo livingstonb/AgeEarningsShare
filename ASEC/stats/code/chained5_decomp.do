@@ -57,24 +57,16 @@ local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 5
 
 foreach i in 18 25 35 45 55 65 {;
 	graph twoway 
-		line age_effect year if (agecat == `i') ||
-		line ${adjustvar}_effect year if (agecat == `i') ||
-		line earnings_effect year if (agecat == `i') ||
-		line uearnshare year if (agecat == `i') ||,
+		line earnings_effect year if (agecat == `i'), $lightest ||
+		line age_effect year if (agecat == `i'), $lighter ||
+		line ${adjustvar}_effect year if (agecat == `i'), $darker ||
+		line uearnshare year if (agecat == `i'), $darkest ||,
 		legend(order(
-			1 "Age Share Component" 
-			2 "${adjustlabel}"
-			3 "Mean Earnings Component" 
+			1 "Mean Earnings Component" 
+			2 "Age Share Component" 
+			3 "${adjustlabel}"
 			4 "Unadjusted Shares")) 
-		legend(cols(1))
-		graphregion(color(white)) xlabel(1976(10)2017)
-		xtitle("") ytitle("")
-		legend(region(lcolor(white)))
-		bgcolor(white)
-		legend(span)
-		xsize(3.5)
-		ysize(3)
-		scale(1.4);
+		${plot_options};
 	* 		yscale(range(0(0.05)0.35)) to scale y-axis ;
 	
 	cd ${basedir}/stats/output/chained_adjustments/${adjustvar};

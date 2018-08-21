@@ -40,24 +40,16 @@ drop sumterms sumvar;
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
-	graph twoway 	line age_effect year if (agecat==`i') ||
-					line earnings_effect year if (agecat==`i') ||
-					line covariance_term year if (agecat==`i') ||
-					line uearnshare year if (agecat==`i') ||,
+	graph twoway	line earnings_effect year if (agecat==`i'), $lightest  ||
+					line covariance_term year if (agecat==`i'), $lighter  ||
+					line age_effect year if (agecat==`i'), $darker  ||
+					line uearnshare year if (agecat==`i'), $darkest ||,
 		legend(order(
-			1 "Age Share Component" 
-			2 "Mean Earnings Component"
-			3 "Covariance Term"
+			1 "Mean Earnings Component" 
+			2 "Covariance Component"
+			3 "Age Shares Component"
 			4 "Unadjusted Shares")) 
-		legend(cols(1))
-		graphregion(color(white)) xlabel(1976(10)2017)
-		xtitle("") ytitle("")
-		legend(region(lcolor(white)))
-		bgcolor(white)
-		legend(span)
-		xsize(3.5)
-		ysize(3)
-		scale(1.4);
+		${plot_options};
 
 	cd ${basedir}/stats/output/alt_agedecomp;
 	graph export alt_agedecomp`i'_${gender}.png, replace;

@@ -31,22 +31,14 @@ gen	age_effect = earnshare_1976 + sumvar;
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
-	graph twoway 	line age_effect year if (agecat==`i') ||
-					line earnings_effect year if (agecat==`i') ||
-					line uearnshare year if (agecat==`i') ||,
+	graph twoway 	line earnings_effect year if (agecat==`i'), $lighter ||
+					line age_effect year if (agecat==`i'), $darker ||
+					line uearnshare year if (agecat==`i'), $darkest ||,
 		legend(order(
-			1 "Age Share Component" 
-			2 "Mean Earnings Component"
+			1 "Mean Earnings Component" 
+			2 "Age Share Component"
 			3 "Unadjusted Shares")) 
-		legend(cols(1))
-		graphregion(color(white)) xlabel(1976(10)2017)
-		xtitle("") ytitle("")
-		legend(region(lcolor(white)))
-		bgcolor(white)
-		legend(span)
-		xsize(3.5)
-		ysize(3)
-		scale(1.4);
+		${plot_options};
 
 	cd ${basedir}/stats/output/agedecomp;
 	graph export agedecomp`i'_${gender}.png, replace;
