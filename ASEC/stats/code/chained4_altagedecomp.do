@@ -40,10 +40,10 @@ drop sumterms sumvar;
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
-	graph twoway	line earnings_effect year if (agecat==`i'), $lightest  ||
-					line covariance_term year if (agecat==`i'), $lighter  ||
-					line age_effect year if (agecat==`i'), $darker  ||
-					line uearnshare year if (agecat==`i'), $darkest ||,
+	graph twoway	line earnings_effect year if (agecat==`i'), $line4  ||
+					line covariance_term year if (agecat==`i'), $line3  ||
+					line age_effect year if (agecat==`i'), $line2  ||
+					line uearnshare year if (agecat==`i'), $line1 ||,
 		legend(order(
 			1 "Mean Earnings Component" 
 			2 "Covariance Component"

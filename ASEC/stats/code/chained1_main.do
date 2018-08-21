@@ -3,6 +3,7 @@ clear;
 set more 1;
 cap mkdir ${basedir}/stats/output/unadjusted;
 cap mkdir ${basedir}/stats/output/agedecomp;
+cap mkdir ${basedir}/stats/output/alt_agedecomp;
 cap mkdir ${basedir}/stats/output/chained_adjustments;
 cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables;
@@ -49,10 +50,12 @@ global plot_options
 		scale(1.4);
 
 global linethickness medthick;
-global darkest lwidth(${linethickness}) lcolor(gs0);
-global darker lwidth(${linethickness}) lcolor(gs6);
-global lighter lwidth(${linethickness}) lcolor(gs10);
-global lightest lwidth(${linethickness}) lcolor(gs13);
+global line1 lwidth(${linethickness}) lpattern(solid);
+global line2 lwidth(${linethickness}) lpattern(longdash);
+global line3 lwidth(${linethickness}) lpattern(shortdash);
+global line4 lwidth(${linethickness}) lpattern(dash_dot);
+global line5 lwidth(${linethickness}) lpattern("-...");
+global line6 lwidth(${linethickness}) lpattern(dot);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
