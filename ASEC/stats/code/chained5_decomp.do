@@ -57,7 +57,7 @@ local ages 1 "Ages 18-24" 2 "Ages 25-34" 3 "Ages 35-44" 4 "Ages 45-54" 5 "Ages 5
 
 foreach i in 18 25 35 45 55 65 {;
 	graph twoway 
-		line earnings_effect year if (agecat == `i'), $line4 ||
+		line earnings_effect year if (agecat == `i'), $line5 ||
 		line age_effect year if (agecat == `i'), $line3 ||
 		line ${adjustvar}_effect year if (agecat == `i'), $line2 ||
 		line zeroed_uearnshare year if (agecat == `i'), $line1 ||,

@@ -45,17 +45,17 @@ global plot_options
 		legend(region(lcolor(white)))
 		bgcolor(white)
 		legend(span)
-		xsize(3.5)
-		ysize(3)
+		xsize(3)
+		ysize(3.5)
 		scale(1.4);
 
-global linethickness medthick;
+global linethickness thick;
 global line1 lwidth(${linethickness}) lpattern(solid);
 global line2 lwidth(${linethickness}) lpattern(longdash);
-global line3 lwidth(${linethickness}) lpattern(shortdash);
-global line4 lwidth(${linethickness}) lpattern(dash_dot);
-global line5 lwidth(${linethickness}) lpattern("-...");
-global line6 lwidth(${linethickness}) lpattern(dot);
+global line3 lwidth(${linethickness}) lpattern(dash);
+global line4 lwidth(${linethickness}) lpattern("-#-#");
+global line5 lwidth(${linethickness}) lpattern("-####-####");
+global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
