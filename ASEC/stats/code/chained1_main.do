@@ -123,7 +123,7 @@ local adjustlabels
 egen ehrmi = group(college hours nonwhite married industry);
 egen erms = group(college nonwhite married services);
 
-forvalues k=1/7 {;
+forvalues k=1/9 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
