@@ -9,17 +9,12 @@ plotdir = basedir + '/pyplots'
 if not os.path.exists(plotdir):
 	os.makedirs(plotdir)
 
-fig = plt.figure(figsize=(10,7))
-
 genders = ['men','women']
 dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(8,4),(1,0)]
 for gender in genders:
 	filepath = datadir + '/unadjusted_' + gender + '.csv'
 	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
-	if gender=='men':
-		ax = fig.add_subplot(121)
-	elif gender=='women':
-		ax = fig.add_subplot(122)
+	fig, ax = plt.subplots(figsize=(5,5.5))
 	
 	j = 0
 	for name, group in df.groupby('agecat'):
@@ -28,11 +23,12 @@ for gender in genders:
 		j = j + 1
 	ax.set_xlim(1976,2017)
 	ax.set_xticks(np.arange(1976,2017,5))
-	ax.set_ylim(0,0.4)
+	ax.set_ylim(0,0.35)
 	ax.set_xlabel('Year')
+	ax.legend(bbox_to_anchor=(0.94,-0.1),ncol=2,handlelength=3)
 		
-ax.legend(bbox_to_anchor=(0.68,0),ncol=3)
+	plt.subplots_adjust(bottom=0.23,top=0.95,right=0.95)
 
-plotpath = plotdir + '/unadjusted.png'
-plt.savefig(plotpath)
+	plotpath = plotdir + '/unadjusted_' + gender +'.png'
+	plt.savefig(plotpath)
 plt.show()
