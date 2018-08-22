@@ -54,3 +54,9 @@ foreach i in 18 25 35 45 55 65 {;
 	cd ${basedir}/stats/output/alt_agedecomp;
 	graph export alt_agedecomp`i'_${gender}.png, replace;
 };
+
+* export data for plotting elsewhere;
+sort year agecat;
+keep year agecat earnings_effect age_effect covariance_effect zeroed_uearnshare uearnshare;
+cd ${basedir}/stats/output/plot_data;
+outsheet using alt_agedecomp_${gender}.csv, comma replace;

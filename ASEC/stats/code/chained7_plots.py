@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 
-basedir = '/Users/brianlivingston/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
+basedir = '/Users/Brian/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
 datadir = basedir + '/plot_data'
 plotdir = basedir + '/pyplots'
 if not os.path.exists(plotdir):
@@ -40,7 +40,7 @@ for gender in genders:
 dashlist = [(1,5),(3,5),(1,0)]
 
 for gender in genders:
-	filepath = datadir + '/agedecomp_' + gender + '.csv'
+	filepath = datadir + '/alt_agedecomp_' + gender + '.csv'
 	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
 	df = df.reset_index()
 	for agegrp in [25,55]:
@@ -63,7 +63,7 @@ for gender in genders:
 	
 		plt.subplots_adjust(bottom=0.25,top=0.95,right=0.95)
 
-		plotpath = plotdir + '/agedecomp_' + gender + str(agegrp) +'.png'
+		plotpath = plotdir + '/alt_agedecomp_' + gender + str(agegrp) +'.png'
 		plt.savefig(plotpath)
 			
 ########################################################################
