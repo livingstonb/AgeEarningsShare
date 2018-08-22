@@ -23,7 +23,7 @@ cd ${basedir}/stats/output/unadjusted;
 graph export uearnshare_${gender}.png, replace;
 
 * export data for plotting elsewhere;
-sort year agecat;
-keep year agecat uearnshare;
+sort agecat year;
+keep agecat year uearnshare;
 cd ${basedir}/stats/output/plot_data;
 outsheet using unadjusted_${gender}.csv, comma replace;
