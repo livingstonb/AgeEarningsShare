@@ -21,3 +21,9 @@ graph twoway `incplots', legend(order(`ages'))
 	scale(1.4);
 cd ${basedir}/stats/output/unadjusted;
 graph export uearnshare_${gender}.png, replace;
+
+* export data for plotting elsewhere;
+sort year agecat;
+keep year agecat uearnshare;
+cd ${basedir}/stats/output/plot_data;
+outsheet using unadjusted_${gender}.csv, comma replace;

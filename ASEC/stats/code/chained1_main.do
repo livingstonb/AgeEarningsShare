@@ -9,6 +9,7 @@ cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables;
 cap mkdir ${basedir}/stats/output/tables/chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables/alt_chained_adjustments;
+cap mkdir ${basedir}/stats/output/plot_data;
 
 /* This do-file calls chained2,chained3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
@@ -61,14 +62,16 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 * Plot unadjusted earnings shares;
 local genders women men;
 foreach gend of local genders {;
-	preserve;
+
 	* Set gender for computations;
 	global gender `gend';
 	
+	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained2_plotunadjusted.do;
 	restore;
 };
+
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSE BY AGE GROUP ONLY;

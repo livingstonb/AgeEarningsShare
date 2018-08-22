@@ -81,3 +81,9 @@ foreach i in 18 25 35 45 55 65 {;
 		cd ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
 		graph export ${adjustvar}`i'_${gender}.png, replace;
 };
+
+* export data for plotting elsewhere;
+sort year agecat;
+keep year agecat earnings_effect age_effect ${adjustvar}_effect zeroed_uearnshare uearnshare;
+cd ${basedir}/stats/output/plot_data;
+outsheet using alt_${adjustvar}_${gender}.csv, comma replace;
