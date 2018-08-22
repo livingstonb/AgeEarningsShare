@@ -10,7 +10,6 @@ bysort  agecat (year): gen period = _n;
 egen panelvar = group(agecat);
 tsset panelvar period;
 gen change = D.uearnshare;
-local components age $adjustvar earnings;
 foreach comp of global components {;
 	gen `comp'_contribution = D.`comp'_effect/D.uearnshare*100;
 };

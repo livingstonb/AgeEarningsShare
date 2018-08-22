@@ -4,7 +4,7 @@
 over the years 1976-2017, using a chain-weighted decomposition */;
 
 * Announce decomposition components for chained_table.do;
-global components age earnings;
+global components age covariance earnings;
 * Declare that this is the alternate decomposition;
 global alt 1;
 
@@ -33,7 +33,7 @@ tsset agecat year;
 gen 	sumterms = D.mearn_jt_t*D.popsharejt;
 replace sumterms = 0 if year == 1976;
 bysort agecat (year): gen sumvar = sum(sumterms);
-gen covariance_term = sumvar;
+gen covariance_effect = sumvar;
 drop sumterms sumvar;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ drop sumterms sumvar;
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
 	graph twoway	line earnings_effect year if (agecat==`i'), $line4  ||
-					line covariance_term year if (agecat==`i'), $line3  ||
+					line covariance_effect year if (agecat==`i'), $line3  ||
 					line age_effect year if (agecat==`i'), $line2  ||
 					line zeroed_uearnshare year if (agecat==`i'), $line1 ||,
 		legend(order(
