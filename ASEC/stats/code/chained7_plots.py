@@ -16,11 +16,12 @@ genders = ['men','women']
 # Unadjusted shares plots
 dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(8,4),(1,0)]
 subplotlist = [121,122]
+titles = ['Men','Women']
 fig = plt.figure(figsize=(8,5))
-for gender, splot in zip(genders,subplotlist):
+for count,gender in enumerate(genders):
 	filepath = datadir + '/unadjusted_' + gender + '.csv'
 	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
-	ax = fig.add_subplot(splot)
+	ax = fig.add_subplot(subplotlist[count])
 	
 	j = 0
 	for name, group in df.groupby('agecat'):
@@ -32,6 +33,7 @@ for gender, splot in zip(genders,subplotlist):
 	ax.set_yticks([0,0.1,0.2,0.3])
 	ax.set_ylim(0,0.35)
 	ax.set_xlabel('Year')
+	ax.set_title(titles[count])
 	
 ax.legend(bbox_to_anchor=(0.48,-0.13),ncol=2,handlelength=3)	
 plt.subplots_adjust(bottom=0.26,top=0.95,right=0.95,wspace=0.3)
@@ -41,13 +43,14 @@ plt.savefig(plotpath)
 
 ########################################################################
 # Population shares decomposition
-dashlist = [(1,5),(3,5),(1,0)]
-subplotlist = [221,222,223,224]
-fig = plt.figure(figsize=(8,6))
+dashlist = [(1,5),(3,3,1,3),(3,5),(1,0)]
+subplotlist = [221,223,222,224]
+fig = plt.figure(figsize=(8,6.5))
 
-components = ['age_effect','earnings_effect','zeroed_uearnshare']
-labels = ['Population Share Component','Mean Earnings Component','Unadjusted Earnings Share']
-		
+components = ['age_effect','earnings_effect','covariance_effect','zeroed_uearnshare']
+labels = ['Population Share Component','Mean Earnings Component','Covariance Component','Unadjusted Earnings Share']
+titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
+	
 count = 0
 for gender in genders:
 	filepath = datadir + '/alt_agedecomp_' + gender + '.csv'
@@ -66,23 +69,27 @@ for gender in genders:
 
 		ax.set_xlim(1976,2017)
 		ax.set_xticks(np.arange(1976,2017,10))
-		ax.set_xlabel('Year')
-		
+		# ax.set_xlabel('Year')
+		ax.set_title(titles[count])
 		count += 1
 		
-ax.legend(bbox_to_anchor=(0.34,-0.25),ncol=1,handlelength=3)
+ax.legend(bbox_to_anchor=(0.34,-0.22),ncol=1,handlelength=3)
 
-plt.subplots_adjust(bottom=0.22,top=0.95,left=0.09,right=0.95,hspace=0.3)
+plt.subplots_adjust(bottom=0.22,top=0.95,left=0.09,right=0.95,hspace=0.4)
 
 plotpath = plotdir + '/alt_agedecomp.png'
 plt.savefig(plotpath)
-
-plt.show()
-sys.exit()		
 ########################################################################
 # Education decomposition
 dashlist = [(1,5),(3,3,1,3),(3,5),(1,0)]
+subplotlist = [221,223,222,224]
+fig = plt.figure(figsize=(8,6.5))
 
+components = ['age_effect','college_effect','earnings_effect','zeroed_uearnshare']
+labels = ['Population Share Component','Education Component','Mean Earnings Component','Unadjusted Earnings Share']
+titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
+
+count = 0
 for gender in genders:
 	filepath = datadir + '/alt_college_' + gender + '.csv'
 	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
@@ -93,26 +100,32 @@ for gender in genders:
 		elif agegrp == 55:
 			df_age = df[df['agecat'] == '55-64 year olds']
 
-		fig, ax = plt.subplots(figsize=(5,5.5))
+		ax = fig.add_subplot(subplotlist[count])
 		
-		components = ['age_effect','college_effect','earnings_effect','zeroed_uearnshare']
-		labels = ['Population Share Component','Education Component','Mean Earnings Component','Unadjusted Earnings Share']
+
 		for j,var in enumerate(components):
 			ax.plot(df_age['year'],df_age[var],label=labels[j],dashes=dashlist[j])
 
 		ax.set_xlim(1976,2017)
-		ax.set_xticks(np.arange(1976,2017,5))
-		ax.set_xlabel('Year')
-		ax.legend(bbox_to_anchor=(0.8,-0.13),ncol=1,handlelength=3)
-	
-		plt.subplots_adjust(bottom=0.28,top=0.95,right=0.95)
+		ax.set_xticks(np.arange(1976,2017,10))
+		ax.set_title(titles[count])
+		# ax.set_xlabel('Year')
+		count += 1
 
-		plotpath = plotdir + '/alt_college_' + gender + str(agegrp) +'.png'
-		plt.savefig(plotpath)
+ax.legend(bbox_to_anchor=(0.34,-0.22),ncol=1,handlelength=3)
+
+plt.subplots_adjust(bottom=0.22,top=0.95,left=0.09,right=0.95,hspace=0.4)
+
+plotpath = plotdir + '/alt_college.png'
+plt.savefig(plotpath)
 		
+plt.show()
+sys.exit()		
 ########################################################################
 # ERMS (educ/race/married/services) decomposition
 dashlist = [(1,5),(3,3,1,3),(3,5),(1,0)]
+subplotlist = [221,223,222,224]
+fig = plt.figure(figsize=(8,6.5))
 
 for gender in genders:
 	filepath = datadir + '/alt_erms_' + gender + '.csv'
