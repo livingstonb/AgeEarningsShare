@@ -5,8 +5,8 @@ over the years 1976-2017, using a chain-weighted decomposition */;
 
 * Announce decomposition components for chained_table.do;
 global components struct comp;
-* Declare that this is NOT the alternate decomposition;
-global alt OB;
+* Declare that this is OB decomp (alt=2);
+global alt 2;
 
 duplicates drop agecat year, force;
 

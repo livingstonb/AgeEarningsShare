@@ -92,6 +92,12 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/chained4_altagedecomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
+	
+	preserve;
+	do ${basedir}/stats/code/chained_important_computations.do;
+	do ${basedir}/stats/code/OB_decomp.do;
+	do ${basedir}/stats/code/chained_table.do;
+	restore;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
