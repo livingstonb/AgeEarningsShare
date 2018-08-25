@@ -40,7 +40,13 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECIDE WHICH DECOMPOSITIONS TO RUN;
-
+scalar PLOT_UNADUSTED = 0;
+scalar AGEDECOMP = 0;
+scalar ALT_AGEDECOMP = 0;
+scalar OB_AGEDECOMP = 0;
+scalar DECOMP = 0;
+scalar ALT_DECOMP = 0;
+scalar OB_DECOMP = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
@@ -71,10 +77,12 @@ foreach gend of local genders {;
 	* Set gender for computations;
 	global gender `gend';
 	
+	if PLOT_UNADJUSTED == 1 {;
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained2_plotunadjusted.do;
 	restore;
+	};
 };
 
 
@@ -86,23 +94,29 @@ foreach gend of local genders {;
 	global gender `gend';
 	global adjustvar ;
 
+	if AGEDECOMP == 1 {;
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained3_agedecomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
+	};
 
+	if ALT_AGEDECOMP == 1 {;
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained4_altagedecomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
-
+	};
+	
+	if OB_AGEDECOMP == 1 {;
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/OB_decomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
+	};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,25 +169,31 @@ forvalues k=1/9 {;
 			global gender `gend';
 			
 			* 3-component decomposition;
+			if DECOMP == 1 {;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained5_decomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
+			};
 			
 			* alternate, 4-component decomposition;
+			if ALT_DECOMP == 1 {;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/chained6_altdecomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
+			};
 			
 			* OB-style decomp;
+			if OB_DECOMP == 1 {;
 			preserve;
 			do ${basedir}/stats/code/chained_important_computations.do;
 			do ${basedir}/stats/code/OB_decomp_Z.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
+			};
 			
 	};
 	
