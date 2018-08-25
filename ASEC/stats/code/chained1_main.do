@@ -39,6 +39,10 @@ replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
+* DECIDE WHICH DECOMPOSITIONS TO RUN;
+
+
+////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
 global plot_options 
 		legend(cols(1))
@@ -74,25 +78,26 @@ foreach gend of local genders {;
 };
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSE BY AGE GROUP ONLY;
 local genders women men;
 foreach gend of local genders {;
 	global gender `gend';
 	global adjustvar ;
-	
+
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained3_agedecomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
-	
+
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/chained4_altagedecomp.do;
 	do ${basedir}/stats/code/chained_table.do;
 	restore;
-	
+
 	preserve;
 	do ${basedir}/stats/code/chained_important_computations.do;
 	do ${basedir}/stats/code/OB_decomp.do;
@@ -136,6 +141,7 @@ forvalues k=1/9 {;
 
 	cap mkdir ${basedir}/stats/output/chained_adjustments/${adjustvar};
 	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
+	cap mkdir ${basedir}/stats/output/Oaxaca_Blinder/${adjustvar};
 	
 	if "$adjustvar"=="male" {;
 		local genders pooled;
@@ -161,6 +167,14 @@ forvalues k=1/9 {;
 			do ${basedir}/stats/code/chained6_altdecomp.do;
 			do ${basedir}/stats/code/chained_table.do;
 			restore;
+			
+			* OB-style decomp;
+			preserve;
+			do ${basedir}/stats/code/chained_important_computations.do;
+			do ${basedir}/stats/code/OB_decomp_Z.do;
+			do ${basedir}/stats/code/chained_table.do;
+			restore;
+			
 	};
 	
 };	

@@ -41,6 +41,7 @@ if $alt == 0 {;
 };
 else if $alt == 1 {;
 	local prefix alt_;
+};
 else if $alt == 2{;
 	local prefix OB_;
 };

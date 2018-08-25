@@ -8,14 +8,31 @@ global components struct comp;
 * Declare that this is OB decomp (alt=2);
 global alt 2;
 
-duplicates drop agecat year, force;
+////////////////////////////////////////////////////////////////////////////////
+* Population share of $adustvar groups within age groups;
+bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
+gen popsharejkt = popjkt/popjt;
+bysort year $adjustvar: egen popkt = sum(asecwt);
+gen popsharekt = popkt/popt;
+
+* Ratio of mean group earnings to mean population earnings;
+bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
+gen mearnjkt	= earnjkt/popjkt;
+bysort year $adustvar: egen earnkt = sum(asecwt*incwage);
+gen mearnkt = earnkt/popkt;
+
+duplicates drop agecat year $adjustvar, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-tsset agecat year;
-gen counterfactual_mearnshare = popsharejt*L.mearnjt;
-bysort year: egen counterfactual_mearnt = sum(counterfactual_mearnshare);
-gen counterfactual_share = counterfactual_mearnshare/counterfactual_mearnt;
+egen panelvar = group(agecat $adjustvar);
+tsset panelvar year;
+
+gen numerator = popsharejt*popsharejkt*L.mearnjkt;
+gen denom_sumterms = popsharekt*L.mearnkt;
+bysort year agecat: egen denominator = sum(denom_sumterms);
+gen sumterms = numerator/denominator;
+bysort year agecat: egen counterfactual_share = sum(sumterms);
 
 * Structural component (unexplained);
 gen structural = uearnshare - counterfactual_share;
@@ -29,6 +46,8 @@ replace structural = 0 if year == 1976;
 replace compositional = 0 if year == 1976;
 bysort agecat (year): gen struct_effect = sum(structural);
 by agecat: gen comp_effect = sum(compositional);
+
+duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
@@ -44,7 +63,7 @@ foreach i in 18 25 35 45 55 65 {;
 		${plot_options};
 
 	cd ${basedir}/stats/output/Oaxaca_Blinder;
-	graph export OB_agedecomp`i'_${gender}.png, replace;
+	graph export OB_${adjustvar}`i'_${gender}.png, replace;
 };
 
 * export data for plotting elsewhere;
