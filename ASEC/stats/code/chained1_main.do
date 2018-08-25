@@ -10,6 +10,7 @@ cap mkdir ${basedir}/stats/output/tables;
 cap mkdir ${basedir}/stats/output/tables/chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables/alt_chained_adjustments;
 cap mkdir ${basedir}/stats/output/plot_data;
+cap mkdir ${basedir}/stats/output/Oaxaca_Blinder;
 
 /* This do-file calls chained2,chained3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
