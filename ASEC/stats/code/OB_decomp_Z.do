@@ -12,14 +12,10 @@ global alt 2;
 * Population share of $adustvar groups within age groups;
 bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
 gen popsharejkt = popjkt/popjt;
-bysort year $adjustvar: egen popkt = sum(asecwt);
-gen popsharekt = popkt/popt;
 
-* Ratio of mean group earnings to mean population earnings;
+* Mean group earnings;
 bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
-bysort year $adustvar: egen earnkt = sum(asecwt*incwage);
-gen mearnkt = earnkt/popkt;
 
 duplicates drop agecat year $adjustvar, force;
 
@@ -28,14 +24,16 @@ duplicates drop agecat year $adjustvar, force;
 egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 
-gen numerator = popsharejt*popsharejkt*L.mearnjkt;
-gen denom_sumterms = popsharekt*L.mearnkt;
-bysort year agecat: egen denominator = sum(denom_sumterms);
-gen sumterms = numerator/denominator;
-bysort year agecat: egen counterfactual_share = sum(sumterms);
+gen num_sumterms = popsharejt*popsharejkt*L.mearnjkt;
+gen denom_sumterms = popsharejt*popsharejkt*L.mearnjkt;
+bysort year agecat: egen numerator = sum(num_sumterms);
+bysort year: egen denominator = sum(denom_sumterms);
+gen counterfactual_share = numerator/denominator;
 
 * Structural component (unexplained);
 gen structural = uearnshare - counterfactual_share;
+
+duplicates drop agecat year, force;
 
 * Compositional component (explained);
 tsset agecat year;
@@ -47,7 +45,7 @@ replace compositional = 0 if year == 1976;
 bysort agecat (year): gen struct_effect = sum(structural);
 by agecat: gen comp_effect = sum(compositional);
 
-duplicates drop agecat year, force;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;

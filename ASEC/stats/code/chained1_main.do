@@ -9,6 +9,7 @@ cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables;
 cap mkdir ${basedir}/stats/output/tables/chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables/alt_chained_adjustments;
+cap mkdir ${basedir}/stats/output/tables/OB_chained_adjustments;
 cap mkdir ${basedir}/stats/output/plot_data;
 cap mkdir ${basedir}/stats/output/Oaxaca_Blinder;
 
@@ -40,7 +41,7 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECIDE WHICH DECOMPOSITIONS TO RUN;
-scalar PLOT_UNADUSTED = 0;
+scalar PLOT_UNADJUSTED = 0;
 scalar AGEDECOMP = 0;
 scalar ALT_AGEDECOMP = 0;
 scalar OB_AGEDECOMP = 0;
