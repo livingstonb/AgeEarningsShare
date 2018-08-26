@@ -12,17 +12,26 @@ duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-tsset agecat year;
-gen counterfactual_mearnshare = popsharejt*L.mearnjt;
-bysort year: egen counterfactual_mearnt = sum(counterfactual_mearnshare);
-gen counterfactual_share = counterfactual_mearnshare/counterfactual_mearnt;
 
-* Structural component (unexplained);
-gen structural = uearnshare - counterfactual_share;
+gen denominator = .;
+foreach i of numlist 18 25 35 45 55 65 {;
+	gen denom_terms = popsharejt*mearnjt;
+	tsset agecat year;
+	replace denom_terms = L.popsharejt*mearnjt if agecat == `i';
+	bysort year: egen denom_temp = sum(denom_terms);
+	replace denominator = denom_temp if agecat == `i';
+	drop denom_temp denom_terms;
+};
+
+tsset agecat year;
+gen counterfactual_share = L.popsharejt*mearnjt/denominator;
 
 * Compositional component (explained);
 tsset agecat year;
-gen compositional = counterfactual_share - L.uearnshare;
+gen compositional = uearnshare - counterfactual_share;
+
+* Structural component (unexplained);
+gen structural = counterfactual_share - L.uearnshare;
 
 * Levels, zeroed at 1976;
 replace structural = 0 if year == 1976;

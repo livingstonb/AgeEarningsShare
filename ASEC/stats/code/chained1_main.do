@@ -44,10 +44,10 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 scalar PLOT_UNADJUSTED = 0;
 scalar AGEDECOMP = 0;
 scalar ALT_AGEDECOMP = 0;
-scalar OB_AGEDECOMP = 0;
+scalar OB_AGEDECOMP = 1;
 scalar DECOMP = 0;
 scalar ALT_DECOMP = 0;
-scalar OB_DECOMP = 1;
+scalar OB_DECOMP = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
@@ -147,8 +147,10 @@ local adjustlabels
 	Educ/Race/Mar/Serv
 	Gender;
 	
-egen ehrmi = group(college hours nonwhite married industry);
-egen erms = group(college nonwhite married services);
+if DECOMP==1 | ALT_DECOMP==1 | OB_DECOMP==1 {;
+	egen ehrmi = group(college hours nonwhite married industry);
+	egen erms = group(college nonwhite married services);
+};
 
 forvalues k=1/9 {;
 	global adjustvar : word `k' of `adjustvars';
