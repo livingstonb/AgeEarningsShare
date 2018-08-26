@@ -4,7 +4,7 @@
 over the years 1976-2017, using a chain-weighted decomposition */;
 
 * Announce decomposition components for chained_table.do;
-global components struct comp;
+global components age earnings ${adjustvar};
 * Declare that this is OB decomp (alt=2);
 global alt 2;
 
@@ -24,26 +24,43 @@ duplicates drop agecat year $adjustvar, force;
 egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 
-gen num_sumterms = popsharejt*popsharejkt*L.mearnjkt;
-gen denom_sumterms = popsharejt*popsharejkt*L.mearnjkt;
-bysort year agecat: egen numerator = sum(num_sumterms);
-bysort year: egen denominator = sum(denom_sumterms);
-gen counterfactual_share = numerator/denominator;
+* First counterfactual earnings share;
+gen denom_terms = L.popsharejt*popsharejkt*mearnjkt;
+gen num_terms = popsharejkt*mearnjkt;
+bysort year: egen denominator = sum(denom_terms);
+bysort year agecat: egen numerator = sum(num_terms);
+tsset panelvar year;
+gen counterfactual_share1 = L.popsharejt*numerator/denominator;
+drop denom_terms num_terms denominator numerator;
 
-* Structural component (unexplained);
-gen structural = uearnshare - counterfactual_share;
+* Second counterfactual earnings share;
+gen denom_terms = L.popsharejt*L.popsharejkt*mearnjkt;
+gen num_terms = L.popsharejkt*mearnjkt;
+bysort year: egen denominator = sum(denom_terms);
+bysort year agecat: egen numerator = sum(num_terms);
+tsset panelvar year;
+gen counterfactual_share2 = L.popsharejt*numerator/denominator;
+drop denom_terms num_terms denominator numerator;
 
 duplicates drop agecat year, force;
 
-* Compositional component (explained);
+* Population share component;
+gen popcomponent = uearnshare - counterfactual_share1;
+
+* Z-variable component;
+gen zcomponent = counterfactual_share1 - counterfactual_share2;
+
+* Mean earnings component;
 tsset agecat year;
-gen compositional = counterfactual_share - L.uearnshare;
+gen mearncomponent = counterfactual_share2 - L.uearnshare;
 
 * Levels, zeroed at 1976;
-replace structural = 0 if year == 1976;
-replace compositional = 0 if year == 1976;
-bysort agecat (year): gen struct_effect = sum(structural);
-by agecat: gen comp_effect = sum(compositional);
+replace popcomponent = 0 if year == 1976;
+replace zcomponent = 0 if year == 1976;
+replace mearncomponent = 0 if year == 1976;
+bysort agecat (year): gen age_effect = sum(popcomponent);
+by agecat: gen ${adjustvar}_effect = sum(zcomponent);
+by agecat: gen earnings_effect = sum(mearncomponent);
 
 
 
@@ -51,13 +68,15 @@ by agecat: gen comp_effect = sum(compositional);
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
-	graph twoway 	line struct_effect year if (agecat==`i'), $line3 ||
-					line comp_effect year if (agecat==`i'), $line2 ||
+	graph twoway 	line earnings_effect year if (agecat==`i'), $line5 ||
+					line age_effect year if (agecat==`i'), $line3 ||
+					line ${adjustvar}_effect year if (agecat==`i'), $line2 ||
 					line zeroed_uearnshare year if (agecat==`i'), $line1 ||,
 		legend(order(
-			1 "Structural Component" 
-			2 "Compositional Component"
-			3 "Unadjusted Shares")) 
+			1 "Mean Earnings Component" 
+			2 "Age Share Component" 
+			3 "${adjustlabel}"
+			4 "Unadjusted Shares")) 
 		${plot_options};
 
 	cd ${basedir}/stats/output/Oaxaca_Blinder;
@@ -66,6 +85,6 @@ foreach i in 18 25 35 45 55 65 {;
 
 * export data for plotting elsewhere;
 sort year agecat;
-keep year agecat struct_effect comp_effect zeroed_uearnshare uearnshare;
+keep year agecat earnings_effect age_effect ${adjustvar}_effect zeroed_uearnshare uearnshare;
 cd ${basedir}/stats/output/plot_data;
 outsheet using OB_agedecomp_${gender}.csv, comma replace;
