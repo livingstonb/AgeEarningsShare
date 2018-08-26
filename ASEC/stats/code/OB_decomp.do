@@ -12,16 +12,9 @@ duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-
-gen denominator = .;
-foreach i of numlist 18 25 35 45 55 65 {;
-	gen denom_terms = popsharejt*mearnjt;
-	tsset agecat year;
-	replace denom_terms = L.popsharejt*mearnjt if agecat == `i';
-	bysort year: egen denom_temp = sum(denom_terms);
-	replace denominator = denom_temp if agecat == `i';
-	drop denom_temp denom_terms;
-};
+tsset agecat year;
+gen denom_terms = L.popsharejt*mearnjt;
+bysort year: egen denominator = sum(denom_terms);
 
 tsset agecat year;
 gen counterfactual_share = L.popsharejt*mearnjt/denominator;
