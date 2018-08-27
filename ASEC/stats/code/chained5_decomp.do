@@ -44,7 +44,7 @@ gen outersumterms_earnings 		= L.popsharejt*innersums_earnings;
 foreach comp of global components {;
 	replace outersumterms_`comp' = 0 if year == 1976;
 	* Sum from t0+1 to year of observation;
-	bysort agecat(year): gen sumvar_`comp' = sum(outersumterms_`comp');
+	bysort agecat (year): gen sumvar_`comp' = sum(outersumterms_`comp');
 	* Component's isolated effect on earnings shares;
 	gen `comp'_effect =  sumvar_`comp';
 };

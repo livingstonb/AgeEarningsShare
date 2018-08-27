@@ -63,7 +63,6 @@ by agecat: gen ${adjustvar}_effect = sum(zcomponent);
 by agecat: gen earnings_effect = sum(mearncomponent);
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
@@ -87,4 +86,4 @@ foreach i in 18 25 35 45 55 65 {;
 sort year agecat;
 keep year agecat earnings_effect age_effect ${adjustvar}_effect zeroed_uearnshare uearnshare;
 cd ${basedir}/stats/output/plot_data;
-outsheet using OB_agedecomp_${gender}.csv, comma replace;
+outsheet using OB_${adjustvar}_${gender}.csv, comma replace;
