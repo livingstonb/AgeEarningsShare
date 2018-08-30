@@ -163,18 +163,18 @@ plotpath = plotdir + prefix +'_hours.png'
 plt.savefig(plotpath)
 		
 ########################################################################
-# ERMS (educ/race/married/services) decomposition
+# EMS (educ/married/services) decomposition
 dashlist = [(1,5),(3,3,1,3),(3,5),(1,0)]
 subplotlist = [221,223,222,224]
 fig = plt.figure(figsize=(8,6.5))
 
-components = ['age_effect','erms_effect','earnings_effect','zeroed_uearnshare']
-labels = ['Population Share Component','Ed/Race/Married/Services Component','Mean Earnings Component','Unadjusted Earnings Share']
+components = ['age_effect','ems_effect','earnings_effect','zeroed_uearnshare']
+labels = ['Population Share Component','Educ/Married/Services Component','Mean Earnings Component','Unadjusted Earnings Share']
 titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
 
 count = 0
 for gender in genders:
-	filepath = datadir + prefix + '_erms_' + gender + '.csv'
+	filepath = datadir + prefix + '_ems_' + gender + '.csv'
 	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
 	df = df.reset_index()
 	for agegrp in [25,55]:
@@ -199,7 +199,7 @@ ax.legend(bbox_to_anchor=(0.34,-0.22),ncol=1,handlelength=3)
 
 plt.subplots_adjust(bottom=0.22,top=0.95,left=0.09,right=0.95,hspace=0.4)
 
-plotpath = plotdir + prefix +'_erms.png'
+plotpath = plotdir + prefix +'_ems.png'
 plt.savefig(plotpath)
 	
 plt.show()

@@ -135,6 +135,7 @@ local adjustvars
 	ehrmi
 	services
 	erms
+	ems
 	male;
 local adjustlabels	
 	College		
@@ -145,11 +146,13 @@ local adjustlabels
 	Ed/Hr/Race/Mar/Ind
 	Services
 	Educ/Race/Mar/Serv
+	Educ/Mar/Serv
 	Gender;
 	
 if DECOMP==1 | ALT_DECOMP==1 | OB_DECOMP==1 {;
 	egen ehrmi = group(college hours nonwhite married industry);
 	egen erms = group(college nonwhite married services);
+	egen ems = group(college married services);
 };
 
 forvalues k=1/9 {;
