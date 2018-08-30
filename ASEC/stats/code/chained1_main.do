@@ -44,10 +44,10 @@ replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 scalar PLOT_UNADJUSTED = 0;
 scalar AGEDECOMP = 0;
 scalar ALT_AGEDECOMP = 0;
-scalar OB_AGEDECOMP = 0;
+scalar OB_AGEDECOMP = 1;
 scalar DECOMP = 0;
 scalar ALT_DECOMP = 0;
-scalar OB_DECOMP = 1;
+scalar OB_DECOMP = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;

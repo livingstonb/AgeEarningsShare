@@ -24,6 +24,15 @@ duplicates drop agecat year $adjustvar, force;
 egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 
+* Check lagged earnings share computation;
+gen denom_terms = L.popsharejt*L.popsharejkt*L.mearnjkt;
+gen num_terms = L.popsharejkt*L.mearnjkt;
+bysort year: egen denominator = sum(denom_terms);
+bysort year agecat: egen numerator = sum(num_terms);
+tsset panelvar year;
+gen Luearnshare = L.popsharejt*numerator/denominator;
+drop denom_terms num_terms denominator numerator;
+
 * First counterfactual earnings share;
 gen denom_terms = L.popsharejt*popsharejkt*mearnjkt;
 gen num_terms = popsharejkt*mearnjkt;
@@ -81,6 +90,11 @@ foreach i in 18 25 35 45 55 65 {;
 	cd ${basedir}/stats/output/Oaxaca_Blinder;
 	graph export OB_${adjustvar}`i'_${gender}.png, replace;
 };
+
+* For checking error in unadjusted earnshare estimate;
+cap mkdir ${basedir}/stats/output/error;
+cd ${basedir}/stats/output/error;
+outsheet Luearnshare uearnshare using OB_${adjustvar}_${gender}.csv, comma replace;
 
 * export data for plotting elsewhere;
 sort year agecat;
