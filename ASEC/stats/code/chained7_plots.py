@@ -47,6 +47,7 @@ plt.savefig(plotpath)
 # Population shares decomposition
 dashlist = [(1,5),(3,5),(1,0)]
 subplotlist = [221,223,222,224]
+lcolorlist = ['b','g','r']
 fig = plt.figure(figsize=(8,6.5))
 
 components = ['age_effect','earnings_effect','zeroed_uearnshare']
@@ -67,7 +68,7 @@ for gender in genders:
 		ax = fig.add_subplot(subplotlist[count])
 		
 		for j,var in enumerate(components):
-			ax.plot(df_age['year'],df_age[var],label=labels[j],dashes=dashlist[j])
+			ax.plot(df_age['year'],df_age[var],label=labels[j],dashes=dashlist[j],color=lcolorlist[j])
 
 		ax.set_xlim(1976,2017)
 		ax.set_xticks(np.arange(1976,2017,10))
