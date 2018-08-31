@@ -35,33 +35,14 @@ rename _varname quantity;
 order quantity;
 
 * Save table as .csv;
-* Prefix for filename;
-if $alt == 0 {;
-	local prefix ;
-};
-else if $alt == 1 {;
-	local prefix alt_;
-};
-else if $alt == 2{;
-	local prefix OB_;
-};
 * Suffix for filename;
-if "$gender"=="pooled" {;
-	local suffix ;
-};
-else {;
-	local suffix _${gender};
-};
 * Save location;
-cd ${basedir}/stats/output/tables/`prefix'chained_adjustments;
+cd ${basedir}/stats/output/tables/${adjustvar};
 
-if "$adjustvar"=="" {;
-	outsheet using `prefix'changes_age`suffix'.csv, comma replace;
-};
-else if "${adjustvar}"=="male"{;
-	outsheet using `prefix'changes_gender`suffix'.csv, comma replace;
+if "$adjustvar"=="male"{;
+	outsheet using gender.csv, comma replace;
 };
 else {;
-	outsheet using `prefix'changes_${adjustvar}`suffix'.csv, comma replace;
+	outsheet using ${adjustvar}_${gender}.csv, comma replace;
 };
 

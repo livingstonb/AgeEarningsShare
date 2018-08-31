@@ -5,27 +5,32 @@ over the years 1976-2017, using a chain-weighted decomposition */;
 
 * Announce decomposition components for chained_table.do;
 global components age earnings;
-* Declare that this is NOT the alternate decomposition;
-global alt 0;
+* Declare that this is OB decomp (alt=2);
+global alt 2;
 
 duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
 * CHAIN-WEIGHTED DECOMP;
-* Component associated with mean earnings;
 tsset agecat year;
-gen 	sumterms = L.popsharejt*D.mearn_jt_t;
-replace sumterms = 0 if year == 1976;
-bysort agecat (year): gen sumvar = sum(sumterms);
-gen	earnings_effect =  sumvar;
-drop sumterms sumvar;
+gen denom_terms = L.popsharejt*mearnjt;
+bysort year: egen denominator = sum(denom_terms);
 
-* Component associated with age share;
 tsset agecat year;
-gen 	sumterms = D.popsharejt*mearn_jt_t;
-replace sumterms = 0 if year == 1976;
-bysort agecat (year): gen sumvar = sum(sumterms);
-gen	age_effect = sumvar;
+gen counterfactual_share = L.popsharejt*mearnjt/denominator;
+
+* Compositional component (explained);
+tsset agecat year;
+gen compositional = uearnshare - counterfactual_share;
+
+* Structural component (unexplained);
+gen structural = counterfactual_share - L.uearnshare;
+
+* Levels, zeroed at 1976;
+replace structural = 0 if year == 1976;
+replace compositional = 0 if year == 1976;
+bysort agecat (year): gen earnings_effect = sum(structural);
+by agecat: gen age_effect = sum(compositional);
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
@@ -36,16 +41,16 @@ foreach i in 18 25 35 45 55 65 {;
 					line zeroed_uearnshare year if (agecat==`i'), $line1 ||,
 		legend(order(
 			1 "Mean Earnings Component" 
-			2 "Age Share Component"
+			2 "Population Shares Component"
 			3 "Unadjusted Shares")) 
 		${plot_options};
 
-	cd ${basedir}/stats/output/agedecomp;
-	graph export agedecomp`i'_${gender}.png, replace;
+	cd ${basedir}/stats/output/stata_plots/age;
+	graph export age_`i'_${gender}.png, replace;
 };
 
 * export data for plotting elsewhere;
 sort year agecat;
-keep year agecat earnings_effect age_effect zeroed_uearnshare uearnshare;
+keep year agecat age_effect earnings_effect zeroed_uearnshare uearnshare;
 cd ${basedir}/stats/output/plot_data;
-outsheet using agedecomp_${gender}.csv, comma replace;
+outsheet using age_${gender}.csv, comma replace;

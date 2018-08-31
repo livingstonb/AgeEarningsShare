@@ -1,17 +1,9 @@
 #delimit;
 clear;
 set more 1;
-cap mkdir ${basedir}/stats/output/unadjusted;
-cap mkdir ${basedir}/stats/output/agedecomp;
-cap mkdir ${basedir}/stats/output/alt_agedecomp;
-cap mkdir ${basedir}/stats/output/chained_adjustments;
-cap mkdir ${basedir}/stats/output/alt_chained_adjustments;
 cap mkdir ${basedir}/stats/output/tables;
-cap mkdir ${basedir}/stats/output/tables/chained_adjustments;
-cap mkdir ${basedir}/stats/output/tables/alt_chained_adjustments;
-cap mkdir ${basedir}/stats/output/tables/OB_chained_adjustments;
 cap mkdir ${basedir}/stats/output/plot_data;
-cap mkdir ${basedir}/stats/output/Oaxaca_Blinder;
+cap mkdir ${basedir}/stats/output/stata_plots;
 
 /* This do-file calls chained2,chained3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
@@ -40,16 +32,6 @@ replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
 
 ////////////////////////////////////////////////////////////////////////////////
-* DECIDE WHICH DECOMPOSITIONS TO RUN;
-scalar PLOT_UNADJUSTED = 0;
-scalar AGEDECOMP = 0;
-scalar ALT_AGEDECOMP = 0;
-scalar OB_AGEDECOMP = 1;
-scalar DECOMP = 0;
-scalar ALT_DECOMP = 0;
-scalar OB_DECOMP = 0;
-
-////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
 global plot_options 
 		legend(cols(1))
@@ -74,57 +56,34 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 * Plot unadjusted earnings shares;
 local genders women men;
 foreach gend of local genders {;
-
 	* Set gender for computations;
 	global gender `gend';
-	
-	if PLOT_UNADJUSTED == 1 {;
 	preserve;
-	do ${basedir}/stats/code/chained_important_computations.do;
-	do ${basedir}/stats/code/chained2_plotunadjusted.do;
+	do ${basedir}/stats/code/decomp_important_computations.do;
+	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
-	};
 };
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSE BY AGE GROUP ONLY;
+cap mkdir ${basedir}/stats/output/stata_plots/age;
+cap mkdir ${basedir}/stats/output/tables/age;
+
 local genders women men;
 foreach gend of local genders {;
 	global gender `gend';
-	global adjustvar ;
-
-	if AGEDECOMP == 1 {;
+	global adjustvar age;
 	preserve;
-	do ${basedir}/stats/code/chained_important_computations.do;
-	do ${basedir}/stats/code/chained3_agedecomp.do;
-	do ${basedir}/stats/code/chained_table.do;
+	do ${basedir}/stats/code/decomp_important_computations.do;
+	do ${basedir}/stats/code/decomp3_population.do;
+	do ${basedir}/stats/code/decomp_table.do;
 	restore;
-	};
-
-	if ALT_AGEDECOMP == 1 {;
-	preserve;
-	do ${basedir}/stats/code/chained_important_computations.do;
-	do ${basedir}/stats/code/chained4_altagedecomp.do;
-	do ${basedir}/stats/code/chained_table.do;
-	restore;
-	};
-	
-	if OB_AGEDECOMP == 1 {;
-	preserve;
-	do ${basedir}/stats/code/chained_important_computations.do;
-	do ${basedir}/stats/code/OB_decomp.do;
-	do ${basedir}/stats/code/chained_table.do;
-	restore;
-	};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
-* Adjusted by only population shares;
-* ehrmi = education/hours/race/married/industry;
-* erms = education/race/married/service sector;
 
 local adjustvars 	
 	college		
@@ -149,19 +108,16 @@ local adjustlabels
 	Educ/Mar/Serv
 	Gender;
 	
-if DECOMP==1 | ALT_DECOMP==1 | OB_DECOMP==1 {;
-	egen ehrmi = group(college hours nonwhite married industry);
-	egen erms = group(college nonwhite married services);
-	egen ems = group(college married services);
-};
+egen ehrmi = group(college hours nonwhite married industry);
+egen erms = group(college nonwhite married services);
+egen ems = group(college married services);
 
 forvalues k=1/9 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
-	cap mkdir ${basedir}/stats/output/chained_adjustments/${adjustvar};
-	cap mkdir ${basedir}/stats/output/alt_chained_adjustments/${adjustvar};
-	cap mkdir ${basedir}/stats/output/Oaxaca_Blinder/${adjustvar};
+	cap mkdir ${basedir}/stats/output/stata_plots/${adjustvar};
+	cap mkdir ${basedir}/stats/output/tables/${adjustvar};
 	
 	if "$adjustvar"=="male" {;
 		local genders pooled;
@@ -174,32 +130,12 @@ forvalues k=1/9 {;
 	foreach gend of local genders {;
 			global gender `gend';
 			
-			* 3-component decomposition;
-			if DECOMP == 1 {;
 			preserve;
-			do ${basedir}/stats/code/chained_important_computations.do;
-			do ${basedir}/stats/code/chained5_decomp.do;
-			do ${basedir}/stats/code/chained_table.do;
+			do ${basedir}/stats/code/decomp_important_computations.do;
+			do ${basedir}/stats/code/decomp4_Zvar.do;
+			do ${basedir}/stats/code/decomp_table.do;
 			restore;
-			};
 			
-			* alternate, 4-component decomposition;
-			if ALT_DECOMP == 1 {;
-			preserve;
-			do ${basedir}/stats/code/chained_important_computations.do;
-			do ${basedir}/stats/code/chained6_altdecomp.do;
-			do ${basedir}/stats/code/chained_table.do;
-			restore;
-			};
-			
-			* OB-style decomp;
-			if OB_DECOMP == 1 {;
-			preserve;
-			do ${basedir}/stats/code/chained_important_computations.do;
-			do ${basedir}/stats/code/OB_decomp_Z.do;
-			do ${basedir}/stats/code/chained_table.do;
-			restore;
-			};
 			
 	};
 	

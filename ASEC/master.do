@@ -14,7 +14,7 @@ do ${basedir}/build/code/build.do;
 * STATS DIRECTORY;
 
 * Plot chained-weighted decomp of income shares, adjusting by various factors;
-do ${basedir}/stats/code/chained1_main.do;
+do ${basedir}/stats/code/decomp1_main.do;
 
 * Plot demographic trends;
 do ${basedir}/stats/code/demographic_plots.do;

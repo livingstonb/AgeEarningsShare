@@ -19,7 +19,7 @@ graph twoway `incplots', legend(order(`ages'))
 	xsize(3)
 	ysize(3.5)
 	scale(1.4);
-cd ${basedir}/stats/output/unadjusted;
+cd ${basedir}/stats/output/stata_plots;
 graph export uearnshare_${gender}.png, replace;
 
 * export data for plotting elsewhere;

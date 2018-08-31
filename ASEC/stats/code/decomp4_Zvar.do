@@ -87,17 +87,18 @@ foreach i in 18 25 35 45 55 65 {;
 			4 "Unadjusted Shares")) 
 		${plot_options};
 
-	cd ${basedir}/stats/output/Oaxaca_Blinder;
-	graph export OB_${adjustvar}`i'_${gender}.png, replace;
+	cd ${basedir}/stats/output/stata_plots/${adjustvar};
+	graph export ${adjustvar}_`i'_${gender}.png, replace;
 };
 
-* For checking error in unadjusted earnshare estimate;
+/* For checking error in unadjusted earnshare estimate, compare true unadjusted
+shares with lagged shares computed with identity */;
 cap mkdir ${basedir}/stats/output/error;
 cd ${basedir}/stats/output/error;
-outsheet Luearnshare uearnshare using OB_${adjustvar}_${gender}.csv, comma replace;
+outsheet Luearnshare uearnshare using ${adjustvar}_${gender}.csv, comma replace;
 
 * export data for plotting elsewhere;
 sort year agecat;
 keep year agecat earnings_effect age_effect ${adjustvar}_effect zeroed_uearnshare uearnshare;
 cd ${basedir}/stats/output/plot_data;
-outsheet using OB_${adjustvar}_${gender}.csv, comma replace;
+outsheet using ${adjustvar}_${gender}.csv, comma replace;
