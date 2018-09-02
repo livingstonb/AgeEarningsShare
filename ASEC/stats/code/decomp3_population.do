@@ -1,17 +1,15 @@
 #delimit;
 
-/* Plots income share adjusted by population shares for each age group
-over the years 1976-2017, using a chain-weighted decomposition */;
+/* Decomposes income share by population shares for each age group
+over the years 1976-2017 */;
 
-* Announce decomposition components for chained_table.do;
+* Announce decomposition components for decomp_table.do;
 global components age earnings;
-* Declare that this is OB decomp (alt=2);
-global alt 2;
 
 duplicates drop agecat year, force;
 
 ////////////////////////////////////////////////////////////////////////////////
-* CHAIN-WEIGHTED DECOMP;
+* DECOMP;
 tsset agecat year;
 gen denom_terms = L.popsharejt*mearnjt;
 bysort year: egen denominator = sum(denom_terms);
@@ -29,7 +27,9 @@ gen structural = counterfactual_share - L.uearnshare;
 * Levels, zeroed at 1976;
 replace structural = 0 if year == 1976;
 replace compositional = 0 if year == 1976;
+* Cumulative sum of changes in earnings share attributed to mean earnings;
 bysort agecat (year): gen earnings_effect = sum(structural);
+* Cumulative sum of changes in earnings share attributed to population share;
 by agecat: gen age_effect = sum(compositional);
 
 ////////////////////////////////////////////////////////////////////////////////

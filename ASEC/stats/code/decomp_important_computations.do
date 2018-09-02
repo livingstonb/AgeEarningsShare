@@ -1,7 +1,7 @@
 #delimit;
 
 /* Computes unadjusted shares based on the desired sample (men/women/pooled)
-and computes mean earnings by group */;
+and computes mean earnings by group--called by decomp1_main */;
 
 if "$gender"=="women" {;
 	keep if male==0;

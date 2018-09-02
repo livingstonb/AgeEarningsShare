@@ -4,6 +4,8 @@ import os
 import numpy as np
 import sys
 
+## Plots decomposition data from output/plot_data
+
 basedir = '/Users/Brian/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
 datadir = basedir + '/plot_data'
 plotdir = basedir + '/pyplots'

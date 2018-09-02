@@ -13,13 +13,13 @@ do ${basedir}/build/code/build.do;
 ////////////////////////////////////////////////////////////////////////////////
 * STATS DIRECTORY;
 
-* Plot chained-weighted decomp of income shares, adjusting by various factors;
+* Decompositions of income shares;
 do ${basedir}/stats/code/decomp1_main.do;
 
 * Plot demographic trends;
 do ${basedir}/stats/code/demographic_plots.do;
 
-* Compare 1976 and 2017 income shares;
+* Compare 1976 and 2017 unadjusted income shares;
 do ${basedir}/stats/code/changes_table.do;
 
 * Compare median hourly earnings, 1994 and 2017;

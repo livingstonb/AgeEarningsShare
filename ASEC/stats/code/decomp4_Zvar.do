@@ -1,12 +1,10 @@
 #delimit;
 
-/* Plots income share adjusted by population shares for each age group
-over the years 1976-2017, using a chain-weighted decomposition */;
+/* Plots income share adjusted by population shares and one other variable,
+for each age group over the years 1976-2017 */;
 
 * Announce decomposition components for chained_table.do;
 global components age earnings ${adjustvar};
-* Declare that this is OB decomp (alt=2);
-global alt 2;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
@@ -20,16 +18,18 @@ gen mearnjkt	= earnjkt/popjkt;
 duplicates drop agecat year $adjustvar, force;
 
 ////////////////////////////////////////////////////////////////////////////////
-* CHAIN-WEIGHTED DECOMP;
+* DECOMPOSITION;
 egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 
-* Check lagged earnings share computation;
+/* Compute lagged earnings via formula to check for error against actual
+lagged earnings */;
 gen denom_terms = L.popsharejt*L.popsharejkt*L.mearnjkt;
 gen num_terms = L.popsharejkt*L.mearnjkt;
 bysort year: egen denominator = sum(denom_terms);
 bysort year agecat: egen numerator = sum(num_terms);
 tsset panelvar year;
+* Lagged earnings (Luearnshare);
 gen Luearnshare = L.popsharejt*numerator/denominator;
 drop denom_terms num_terms denominator numerator;
 

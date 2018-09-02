@@ -1,5 +1,8 @@
 #delimit;
 
+/* After performing decomposition, produces decomposition table and saves as 
+csv */;
+
 ////////////////////////////////////////////////////////////////////////////////
 
 * COMPUTE STATISTICS FOR TABLE;

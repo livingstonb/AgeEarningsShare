@@ -5,7 +5,7 @@ cap mkdir ${basedir}/stats/output/tables;
 cap mkdir ${basedir}/stats/output/plot_data;
 cap mkdir ${basedir}/stats/output/stata_plots;
 
-/* This do-file calls chained2,chained3,... to compute and plot income share
+/* This do-file calls decomp2,decomp3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
 
 use ${basedir}/build/output/ASEC.dta;
@@ -85,6 +85,11 @@ foreach gend of local genders {;
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 
+egen ehrmi = group(college hours nonwhite married industry);
+egen erms = group(college nonwhite married services);
+egen ems = group(college married services);
+
+* Z-variables;
 local adjustvars 	
 	college		
 	hours 	
@@ -107,11 +112,8 @@ local adjustlabels
 	Educ/Race/Mar/Serv
 	Educ/Mar/Serv
 	Gender;
-	
-egen ehrmi = group(college hours nonwhite married industry);
-egen erms = group(college nonwhite married services);
-egen ems = group(college married services);
 
+* Loop over Z-variables;
 forvalues k=1/9 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
@@ -119,6 +121,7 @@ forvalues k=1/9 {;
 	cap mkdir ${basedir}/stats/output/stata_plots/${adjustvar};
 	cap mkdir ${basedir}/stats/output/tables/${adjustvar};
 	
+	* If adjusting by gender, pool male and female observations;
 	if "$adjustvar"=="male" {;
 		local genders pooled;
 	};
@@ -126,7 +129,7 @@ forvalues k=1/9 {;
 		local genders women men;
 	};
 	
-	* Loop over men and women unless decomposing by gender (in which case, pool);
+	* Loop over men and women;
 	foreach gend of local genders {;
 			global gender `gend';
 			
