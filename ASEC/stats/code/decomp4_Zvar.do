@@ -4,7 +4,7 @@
 for each age group over the years 1976-2017 */;
 
 * Announce decomposition components for chained_table.do;
-global components age earnings ${adjustvar};
+global components age interact earnings ${adjustvar};
 
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adustvar groups within age groups;
