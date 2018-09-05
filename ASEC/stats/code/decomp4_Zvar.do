@@ -5,37 +5,33 @@ for each age group over the years 1976-2017 */;
 
 * Announce decomposition components for chained_table.do;
 global components age interact earnings ${adjustvar};
+drop popsharejt popsharejkt;
 
 ////////////////////////////////////////////////////////////////////////////////
-* Population share of $adustvar groups within age groups;
-bysort year agecat $adjustvar: egen popjkt = sum(asecwt);
-gen popsharejkt = popjkt/popjt;
+* Population share of $adjustvar;
+bysort year ${adjustvar}: egen popkt = sum(asecwt);
+gen popsharekt = popkt/popt;
+
+* Population share of age groups within age $adjustvar group;
+bysort year agecat $adjustvar: egen popkjt = sum(asecwt);
+gen popsharekjt = popkjt/popkt;
 
 * Mean group earnings;
-bysort year agecat $adjustvar: egen earnjkt = sum(asecwt*incwage);
-gen mearnjkt	= earnjkt/popjkt;
+bysort year agecat $adjustvar: egen earnkjt = sum(asecwt*incwage);
+gen mearnkjt	= earnjkt/popkjt;
 
 duplicates drop agecat year $adjustvar, force;
 
 ////////////////////////////////////////////////////////////////////////////////
-* DECOMPOSITION;
 egen panelvar = group(agecat $adjustvar);
-tsset panelvar year;
 
-/* Compute lagged earnings via formula to check for error against actual
-lagged earnings */;
-gen denom_terms = L.popsharejt*L.popsharejkt*L.mearnjkt;
-gen num_terms = L.popsharejkt*L.mearnjkt;
-bysort year: egen denominator = sum(denom_terms);
-bysort year agecat: egen numerator = sum(num_terms);
-tsset panelvar year;
-* Lagged earnings (Luearnshare);
-gen Luearnshare = L.popsharejt*numerator/denominator;
-drop denom_terms num_terms denominator numerator num_terms;
+* TRANSFORM VARIABLES TO ORIGINAL VARIABLE ORDER;
+gen temp_terms = popsharekt*popsharekjt;
+bysort year agecat: egen popsharejt = sum(temp_terms);
+gen popsharejkt = popsharekjt*popsharekt/popsharejt;
+gen mearnjkt = mearnkjt;
 
-* Population share component;
-tsset panelvar year;
-gen num_terms = L.popsharejkt*L.mearnjkt;
+gen num_terms = popsharejkt*mearnjkt;
 bysort year agecat: egen numerator = sum(num_terms);
 tsset panelvar year;
 replace numerator = popsharejt*numerator;
@@ -45,29 +41,8 @@ tsset panelvar year;
 gen popcomponent = counterfactual_share - L.uearnshare;
 drop counterfactual_share numerator denominator num_terms;
 
-* Z-variable component;
-tsset panelvar year;
-gen num_terms = popsharejkt*L.mearnjkt;
-bysort year agecat: egen numerator = sum(num_terms);
-tsset panelvar year;
-replace numerator = L.popsharejt*numerator;
-bysort year ${adjustvar}: egen denominator = sum(numerator);
-gen counterfactual_share = numerator/denominator;
-tsset panelvar year;
-gen zcomponent = counterfactual_share - L.uearnshare;
-drop counterfactual_share numerator denominator num_terms;
-
-* Mean earnings component;
-tsset panelvar year;
-gen num_terms = L.popsharejkt*mearnjkt;
-bysort year agecat: egen numerator = sum(num_terms);
-tsset panelvar year;
-replace numerator = L.popsharejt*numerator;
-bysort year ${adjustvar}: egen denominator = sum(numerator);
-gen counterfactual_share = numerator/denominator;
-tsset panelvar year;
-gen mearncomponent = counterfactual_share - L.uearnshare;
-drop counterfactual_share numerator denominator num_terms;
+////////////////////////////////////////////////////////////////////////////////
+* LEVELS;
 
 duplicates drop agecat year, force;
 
