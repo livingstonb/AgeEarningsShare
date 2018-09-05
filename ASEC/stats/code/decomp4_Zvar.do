@@ -5,7 +5,7 @@ for each age group over the years 1976-2017 */;
 
 * Announce decomposition components for chained_table.do;
 global components age interact earnings ${adjustvar};
-drop popsharejt popsharejkt;
+drop popsharejt;
 
 ////////////////////////////////////////////////////////////////////////////////
 * Population share of $adjustvar;
@@ -18,7 +18,7 @@ gen popsharekjt = popkjt/popkt;
 
 * Mean group earnings;
 bysort year agecat $adjustvar: egen earnkjt = sum(asecwt*incwage);
-gen mearnkjt	= earnjkt/popkjt;
+gen mearnkjt	= earnkjt/popkjt;
 
 duplicates drop agecat year $adjustvar, force;
 
@@ -26,25 +26,30 @@ duplicates drop agecat year $adjustvar, force;
 egen panelvar = group(agecat $adjustvar);
 
 * TRANSFORM VARIABLES TO ORIGINAL VARIABLE ORDER;
-gen temp_terms = popsharekt*popsharekjt;
-bysort year agecat: egen popsharejt = sum(temp_terms);
-gen popsharejkt = popsharekjt*popsharekt/popsharejt;
-gen mearnjkt = mearnkjt;
 
-gen num_terms = popsharejkt*mearnjkt;
-bysort year agecat: egen numerator = sum(num_terms);
+*** Lagged unadjusted;
 tsset panelvar year;
-replace numerator = popsharejt*numerator;
-bysort year ${adjustvar}: egen denominator = sum(numerator);
-gen counterfactual_share = numerator/denominator;
+gen temp_terms = L.popsharekt*L.popsharekjt;
+bysort year agecat: egen popsharejt = sum(temp_terms);
 tsset panelvar year;
-gen popcomponent = counterfactual_share - L.uearnshare;
-drop counterfactual_share numerator denominator num_terms;
+gen popsharejkt = L.popsharekjt*L.popsharekt/popsharejt;
+gen mearnjkt = L.mearnkjt;
+
+do ${basedir}/stats/code/decomp_transformation;
+rename counterfactual_share Luearnshare;
+
+
+duplicates drop agecat year, force;
+
+/* For checking error in unadjusted earnshare estimate, compare true unadjusted
+shares with lagged shares computed with identity */;
+sort agecat year;
+cap mkdir ${basedir}/stats/output/error;
+cd ${basedir}/stats/output/error;
+outsheet agecat year Luearnshare uearnshare using ${adjustvar}_${gender}.csv, comma replace;
 
 ////////////////////////////////////////////////////////////////////////////////
 * LEVELS;
-
-duplicates drop agecat year, force;
 
 * Interaction component;
 gen interactcomponent = D.uearnshare-popcomponent-zcomponent-mearncomponent;
@@ -81,11 +86,6 @@ foreach i in 18 25 35 45 55 65 {;
 	graph export ${adjustvar}_`i'_${gender}.png, replace;
 };
 
-/* For checking error in unadjusted earnshare estimate, compare true unadjusted
-shares with lagged shares computed with identity */;
-cap mkdir ${basedir}/stats/output/error;
-cd ${basedir}/stats/output/error;
-outsheet Luearnshare uearnshare using ${adjustvar}_${gender}.csv, comma replace;
 
 * export data for plotting elsewhere;
 sort year agecat;
