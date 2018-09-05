@@ -27,7 +27,7 @@ egen panelvar = group(agecat $adjustvar);
 
 * TRANSFORM VARIABLES TO ORIGINAL VARIABLE ORDER;
 
-*** Lagged unadjusted;
+*** Lagged unadjusted, computed to check computation error;
 tsset panelvar year;
 gen temp_terms = L.popsharekt*L.popsharekjt;
 bysort year agecat: egen popsharejt = sum(temp_terms);
@@ -36,9 +36,46 @@ gen popsharejkt = L.popsharekjt*L.popsharekt/popsharejt;
 gen mearnjkt = L.mearnkjt;
 
 do ${basedir}/stats/code/decomp_transformation;
+tsset panelvar year;
 rename counterfactual_share Luearnshare;
 
+*** Z-component;
+tsset panelvar year;
+gen temp_terms = popsharekt*L.popsharekjt;
+bysort year agecat: egen popsharejt = sum(temp_terms);
+tsset panelvar year;
+gen popsharejkt = L.popsharekjt*popsharekt/popsharejt;
+gen mearnjkt = L.mearnkjt;
 
+do ${basedir}/stats/code/decomp_transformation;
+tsset panelvar year;
+gen zcomponent = counterfactual_share - L.uearnshare;
+
+*** pop-component;
+tsset panelvar year;
+gen temp_terms = L.popsharekt*popsharekjt;
+bysort year agecat: egen popsharejt = sum(temp_terms);
+tsset panelvar year;
+gen popsharejkt = popsharekjt*L.popsharekt/L.popsharejt;
+gen mearnjkt = L.mearnkjt;
+
+do ${basedir}/stats/code/decomp_transformation;
+tsset panelvar year;
+gen popcomponent = counterfactual_share - L.uearnshare;
+
+*** mearn-component;
+tsset panelvar year;
+gen temp_terms = L.popsharekt*L.popsharekjt;
+bysort year agecat: egen popsharejt = sum(temp_terms);
+tsset panelvar year;
+gen popsharejkt = L.popsharekjt*L.popsharekt/L.popsharejt;
+gen mearnjkt = mearnkjt;
+
+do ${basedir}/stats/code/decomp_transformation;
+tsset panelvar year;
+gen mearncomponent = counterfactual_share - L.uearnshare;
+
+***;
 duplicates drop agecat year, force;
 
 /* For checking error in unadjusted earnshare estimate, compare true unadjusted
@@ -52,6 +89,7 @@ outsheet agecat year Luearnshare uearnshare using ${adjustvar}_${gender}.csv, co
 * LEVELS;
 
 * Interaction component;
+tsset agecat year;
 gen interactcomponent = D.uearnshare-popcomponent-zcomponent-mearncomponent;
 
 * Levels, zeroed at 1976;
