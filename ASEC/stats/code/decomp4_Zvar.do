@@ -25,7 +25,8 @@ duplicates drop agecat year $adjustvar, force;
 ////////////////////////////////////////////////////////////////////////////////
 egen panelvar = group(agecat $adjustvar);
 
-* TRANSFORM VARIABLES TO ORIGINAL VARIABLE ORDER;
+* TRANSFORM VARIABLES TO ORIGINAL VARIABLE ORDER, THEN DECOMPOSE BY ORIGINAL
+FORMULAS;
 
 *** Lagged unadjusted, computed to check computation error;
 tsset panelvar year;
@@ -56,7 +57,7 @@ tsset panelvar year;
 gen temp_terms = L.popsharekt*popsharekjt;
 bysort year agecat: egen popsharejt = sum(temp_terms);
 tsset panelvar year;
-gen popsharejkt = popsharekjt*L.popsharekt/L.popsharejt;
+gen popsharejkt = popsharekjt*L.popsharekt/popsharejt;
 gen mearnjkt = L.mearnkjt;
 
 do ${basedir}/stats/code/decomp_transformation;
@@ -68,7 +69,7 @@ tsset panelvar year;
 gen temp_terms = L.popsharekt*L.popsharekjt;
 bysort year agecat: egen popsharejt = sum(temp_terms);
 tsset panelvar year;
-gen popsharejkt = L.popsharekjt*L.popsharekt/L.popsharejt;
+gen popsharejkt = L.popsharekjt*L.popsharekt/popsharejt;
 gen mearnjkt = mearnkjt;
 
 do ${basedir}/stats/code/decomp_transformation;
