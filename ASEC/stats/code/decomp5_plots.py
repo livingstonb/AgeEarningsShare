@@ -86,13 +86,13 @@ plotpath = plotdir + '/agedecomp.png'
 plt.savefig(plotpath)
 ########################################################################
 # Education decomposition
-dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(1,0)]
+dashlist = [(1,5),(3,5),(8,4,1,4),(1,0)]
 subplotlist = [221,223,222,224]
-lcolorlist = ['b','y','k','g','r']
+lcolorlist = ['b','k','g','r']
 fig = plt.figure(figsize=(8,6.5))
 
-components = ['age_effect','college_effect','earnings_effect','interact_effect','zeroed_uearnshare']
-labels = ['Population Share Component','Education Component','Mean Earnings Component','Interaction','Unadjusted Earnings Share']
+components = ['composition_effect','struct_effect','interact_effect','zeroed_uearnshare']
+labels = ['Compositional Effect','Structural Effect','Interaction','Unadjusted Earnings Share']
 titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
 
 count = 0
@@ -127,13 +127,13 @@ plt.savefig(plotpath)
 		
 ########################################################################
 # Hours decomposition
-dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(1,0)]
+dashlist = [(1,5),(3,5),(8,4,1,4),(1,0)]
 subplotlist = [221,223,222,224]
-lcolorlist = ['b','y','k','g','r']
+lcolorlist = ['b','k','g','r']
 fig = plt.figure(figsize=(8,6.5))
 
-components = ['age_effect','hours_effect','earnings_effect','interact_effect','zeroed_uearnshare']
-labels = ['Population Share Component','Hours Component','Mean Earnings Component','Interaction','Unadjusted Earnings Share']
+components = ['composition_effect','struct_effect','interact_effect','zeroed_uearnshare']
+labels = ['Compositional Effect','Structural Effect','Interaction','Unadjusted Earnings Share']
 titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
 
 count = 0
@@ -168,13 +168,13 @@ plt.savefig(plotpath)
 		
 ########################################################################
 # EMS (educ/married/services) decomposition
-dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(1,0)]
+dashlist = [(1,5),(3,5),(8,4,1,4),(1,0)]
 subplotlist = [221,223,222,224]
-lcolorlist = ['b','y','k','g','r']
+lcolorlist = ['b','k','g','r']
 fig = plt.figure(figsize=(8,6.5))
 
-components = ['age_effect','ems_effect','earnings_effect','interact_effect','zeroed_uearnshare']
-labels = ['Population Share Component','Educ/Married/Services Component','Mean Earnings Component','Interaction','Unadjusted Earnings Share']
+components = ['composition_effect','struct_effect','interact_effect','zeroed_uearnshare']
+labels = ['Compositional Effect','Structural Effect','Interaction','Unadjusted Earnings Share']
 titles = ['Men 25-34','Men 55-64','Women 25-34','Women 55-64']
 
 count = 0
