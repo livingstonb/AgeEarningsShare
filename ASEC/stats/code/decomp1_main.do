@@ -54,7 +54,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-
+if 0 {;
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
@@ -90,25 +90,29 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/decomp_table.do;
 	restore;
 };
-
+};
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 
 * Indicator for education/marital status/services sector;
 egen ems = group(college married services);
+* Indicator for education/race/marital status/industry;
+egen ermi = group(college nonwhite married industry);
 
 * Z-variables (to decompose by in addition to age shares of population);
 local adjustvars 	
 	college		
 	hours 	
-	ems;
+	ems
+	ermi;
 local adjustlabels	
 	College		
 	Hours	
-	Educ/Mar/Serv;
+	Educ/Mar/Serv
+	Educ/Race/Mar/Ind;
 
 * Loop over Z-variables;
-forvalues k=1/3 {;
+forvalues k=1/4 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
