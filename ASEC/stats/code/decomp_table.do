@@ -4,7 +4,6 @@
 csv */;
 
 ////////////////////////////////////////////////////////////////////////////////
-
 * COMPUTE STATISTICS FOR TABLE;
 keep if year==1976 | year==2017;
 keep agecat year uearnshare *effect;
@@ -12,10 +11,14 @@ keep agecat year uearnshare *effect;
 bysort  agecat (year): gen period = _n;
 egen panelvar = group(agecat);
 tsset panelvar period;
+
+* Change in unadjusted earnings share;
 gen change = D.uearnshare;
+* Components of decomposition;
 foreach comp of global components {;
 	gen `comp'_contribution = D.`comp'_effect/D.uearnshare*100;
 };
+* 1976 and 2017 earnings shares;
 bysort agecat (year): gen eshare1976 = uearnshare[1];
 bysort agecat (year): gen eshare2017 = uearnshare[2];
 
@@ -38,7 +41,6 @@ rename _varname quantity;
 order quantity;
 
 * Save table as .csv;
-* Suffix for filename;
 * Save location;
 cd ${basedir}/stats/output/tables/${adjustvar};
 

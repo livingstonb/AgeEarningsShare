@@ -7,13 +7,14 @@ import sys
 ## Plots decomposition data from output/plot_data
 
 basedir = '/Users/brianlivingston/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
+# Directory of csv's
 datadir = basedir + '/plot_data'
+# Output directory for p lots
 plotdir = basedir + '/pyplots'
 if not os.path.exists(plotdir):
 	os.makedirs(plotdir)
 	
 genders = ['men','women']
-
 
 ########################################################################
 # Unadjusted shares plots

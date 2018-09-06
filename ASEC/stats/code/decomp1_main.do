@@ -54,13 +54,16 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-if 0 {;
+
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
 	global gender `gend';
+	
 	preserve;
+	* Compute unadjusted shares and mean earnings;
 	do ${basedir}/stats/code/decomp_important_computations.do;
+	* Make plots;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
 };
@@ -74,20 +77,27 @@ cap mkdir ${basedir}/stats/output/tables/age;
 
 local genders women men;
 foreach gend of local genders {;
+	* Select gender;
 	global gender `gend';
+	* Select variable to adjust by;
 	global adjustvar age;
 	preserve;
+	* Compute unadjusted shares and mean earnings;
 	do ${basedir}/stats/code/decomp_important_computations.do;
+	* Compute other variables and perform decomposition;
 	do ${basedir}/stats/code/decomp3_population.do;
+	* Save decomposition as a spreadsheet;
 	do ${basedir}/stats/code/decomp_table.do;
 	restore;
 };
-};
+
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
+
+* Indicator for education/marital status/services sector;
 egen ems = group(college married services);
 
-* Z-variables;
+* Z-variables (to decompose by in addition to age shares of population);
 local adjustvars 	
 	college		
 	hours 	
@@ -115,13 +125,17 @@ forvalues k=1/3 {;
 	
 	* Loop over men and women;
 	foreach gend of local genders {;
-			global gender `gend';
+		* Select gender;
+		global gender `gend';
 			
-			preserve;
-			do ${basedir}/stats/code/decomp_important_computations.do;
-			do ${basedir}/stats/code/decomp4_Zvar.do;
-			do ${basedir}/stats/code/decomp_table.do;
-			restore;
+		preserve;
+		* Compute unadjusted shares and mean earnings;
+		do ${basedir}/stats/code/decomp_important_computations.do;
+		* Compute other variables and perform decomposition;
+		do ${basedir}/stats/code/decomp4_Zvar.do;
+		* Save decomposition as a spreadsheet;
+		do ${basedir}/stats/code/decomp_table.do;
+		restore;
 			
 			
 	};

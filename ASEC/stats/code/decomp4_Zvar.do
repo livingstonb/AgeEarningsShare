@@ -23,7 +23,7 @@ egen panelvar = group(agecat $adjustvar);
 tsset panelvar year;
 
 /* Compute lagged earnings via formula to check for error against actual
-lagged earnings */;
+lagged earnings -- will be exported to csv */;
 gen denom_terms = L.popsharejt*L.popsharejkt*L.mearnjkt;
 gen num_terms = L.popsharejkt*L.mearnjkt;
 bysort year: egen denominator = sum(denom_terms);
@@ -42,6 +42,7 @@ replace numerator = popsharejt*numerator;
 bysort year ${adjustvar}: egen denominator = sum(numerator);
 gen counterfactual_share = numerator/denominator;
 tsset panelvar year;
+* Compute population share component;
 gen popcomponent = counterfactual_share - L.uearnshare;
 drop counterfactual_share numerator denominator num_terms;
 
@@ -54,6 +55,7 @@ replace numerator = L.popsharejt*numerator;
 bysort year ${adjustvar}: egen denominator = sum(numerator);
 gen counterfactual_share = numerator/denominator;
 tsset panelvar year;
+* Compute Z-component;
 gen zcomponent = counterfactual_share - L.uearnshare;
 drop counterfactual_share numerator denominator num_terms;
 
@@ -66,6 +68,7 @@ replace numerator = L.popsharejt*numerator;
 bysort year ${adjustvar}: egen denominator = sum(numerator);
 gen counterfactual_share = numerator/denominator;
 tsset panelvar year;
+* Compute mean earnings component;
 gen mearncomponent = counterfactual_share - L.uearnshare;
 drop counterfactual_share numerator denominator num_terms;
 
@@ -74,7 +77,7 @@ duplicates drop agecat year, force;
 * Interaction component;
 gen interactcomponent = D.uearnshare-popcomponent-zcomponent-mearncomponent;
 
-* Levels, zeroed at 1976;
+* Find levels from changes, levels zeroed at 1976;
 replace popcomponent = 0 if year == 1976;
 replace zcomponent = 0 if year == 1976;
 replace mearncomponent = 0 if year == 1976;
