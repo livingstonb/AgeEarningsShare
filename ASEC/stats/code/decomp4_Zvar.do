@@ -69,6 +69,7 @@ by agecat: gen interact_effect = sum(interactcomponent);
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
+
 * Loop over age groups;
 foreach i in 18 25 35 45 55 65 {;	
 					line composition_effect year if (agecat==`i'), $line5 ||

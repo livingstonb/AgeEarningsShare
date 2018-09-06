@@ -96,20 +96,20 @@ foreach gend of local genders {;
 
 * Indicator for education/marital status/services sector;
 egen ems = group(college married services);
-* Indicator for education/race/marital status/industry;
-egen ermi = group(college nonwhite married industry);
+* Variable of 1's, to do age-only decomposition;
+gen ones = 1;
 
 * Z-variables (to decompose by in addition to age shares of population);
 local adjustvars 	
+	ones
 	college		
 	hours 	
-	ems
-	ermi;
+	ems;
 local adjustlabels	
+	Age
 	College		
 	Hours	
-	Educ/Mar/Serv
-	Educ/Race/Mar/Ind;
+	Educ/Mar/Serv;
 
 * Loop over Z-variables;
 forvalues k=1/4 {;
