@@ -54,7 +54,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-if 0 {;
+
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
@@ -68,29 +68,6 @@ foreach gend of local genders {;
 	restore;
 };
 
-
-
-////////////////////////////////////////////////////////////////////////////////
-* DECOMPOSE BY AGE GROUP ONLY;
-cap mkdir ${basedir}/stats/output/stata_plots/age;
-cap mkdir ${basedir}/stats/output/tables/age;
-
-local genders women men;
-foreach gend of local genders {;
-	* Select gender;
-	global gender `gend';
-	* Select variable to adjust by;
-	global adjustvar age;
-	preserve;
-	* Compute unadjusted shares and mean earnings;
-	do ${basedir}/stats/code/decomp_important_computations.do;
-	* Compute other variables and perform decomposition;
-	do ${basedir}/stats/code/decomp3_population.do;
-	* Save decomposition as a spreadsheet;
-	do ${basedir}/stats/code/decomp_table.do;
-	restore;
-};
-};
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 
