@@ -10,7 +10,7 @@ decompositions over the years 1976-2017 */;
 
 use ${basedir}/build/output/ASEC.dta;
 
-local EXPORT_PYTHON = 1;
+local EXPORT_PYTHON = 0;
 
 ////////////////////////////////////////////////////////////////////////////////
 * HOUSEKEEPING;
