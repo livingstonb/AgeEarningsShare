@@ -10,6 +10,8 @@ decompositions over the years 1976-2017 */;
 
 use ${basedir}/build/output/ASEC.dta;
 
+local EXPORT_PYTHON = 1;
+
 ////////////////////////////////////////////////////////////////////////////////
 * HOUSEKEEPING;
 drop if age < 18;
@@ -30,6 +32,13 @@ replace hours = 2 if weeklyhours>10 & weeklyhours<=35;
 replace hours = 3 if weeklyhours>35 & weeklyhours<=45;
 replace hours = 4 if weeklyhours>45 & weeklyhours<=60;
 replace hours = 5 if weeklyhours>60 & weeklyhours<.;
+
+if `EXPORT_PYTHON'==1 {;
+keep year agecat age incwage hours sex college married services nonwhite asecwt
+	industry;
+outsheet using ${basedir}/build/output/ASEC.csv, comma nolabel replace;
+assert 0;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
