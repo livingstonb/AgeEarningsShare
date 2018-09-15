@@ -63,7 +63,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-
+if 0 {;
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
@@ -76,29 +76,35 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
 };
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 
-* Indicator for education/marital status/services sector;
 egen ems = group(college married services);
+egen emrs = group(college married nonwhite race services);
+egen emhri = group(college married nonwhite race hours industry);
 * Variable of 1's, to do age-only decomposition;
 gen ones = 1;
 
 * Z-variables (to decompose by in addition to age shares of population);
-local adjustvars 	
+local adjustvars 
 	ones
-	college		
-	hours 	
-	ems;
-local adjustlabels	
+	college
+	hours
+	ems
+	emrs
+	emhri;
+local adjustlabels
 	Age
-	College		
-	Hours	
-	Educ/Mar/Serv;
+	Education
+	Hours
+	Educ/Mar/Services
+	Educ/Mar/Race/Services
+	Educ/Mar/Hrs/Race/Ind;
 
 * Loop over Z-variables;
-forvalues k=1/4 {;
+forvalues k=1/6 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
@@ -122,7 +128,7 @@ forvalues k=1/4 {;
 		* Compute unadjusted shares and mean earnings;
 		do ${basedir}/stats/code/decomp_important_computations.do;
 		* Compute other variables and perform decomposition;
-		do ${basedir}/stats/code/decomp4_Zvar.do;
+		do ${basedir}/stats/code/decomp3_Zvar.do;
 		* Save decomposition as a spreadsheet;
 		do ${basedir}/stats/code/decomp_table.do;
 		restore;
