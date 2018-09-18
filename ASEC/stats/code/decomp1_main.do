@@ -4,6 +4,7 @@ set more 1;
 cap mkdir ${basedir}/stats/output/tables;
 cap mkdir ${basedir}/stats/output/plot_data;
 cap mkdir ${basedir}/stats/output/stata_plots;
+cap mkdir ${basedir}/stats/output/empty_cats;
 
 /* This do-file calls decomp2,decomp3,... to compute and plot income share
 decompositions over the years 1976-2017 */;
@@ -63,7 +64,6 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-if 0 {;
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
@@ -75,7 +75,6 @@ foreach gend of local genders {;
 	* Make plots;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
-};
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +104,7 @@ local adjustlabels
 
 * Loop over Z-variables;
 forvalues k=1/6 {;
+	global iter `k';
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
@@ -138,3 +138,16 @@ forvalues k=1/6 {;
 	
 };	
 
+* Export matrix of # of empty categories per Z-variable;
+clear;
+
+foreach adjustlab in local adjustlabels {;
+	local collabels `collabels' `adjustlab'_women `adjustlab'_men 
+};
+
+matrix colnames empty_cats = `collabels';
+svmat empty_cats, names(col);
+gen quantity = "Num empty" if _n==1;
+replace quantity = "Num total" if _n==2;
+order quantity;
+outsheet using ${basedir}/stats/output/empty_cats.csv, comma replace;

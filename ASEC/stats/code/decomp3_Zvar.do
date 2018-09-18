@@ -17,20 +17,20 @@ gen mearnjkt	= earnjkt/popjkt;
 
 duplicates drop agecat year $adjustvar, force;
 
-sort $adjustvar agecat year;
-* outsheet $adjustvar agecat year mearnjkt popsharejkt uearnshare using /Users/Brian/Desktop/before_fill_${adjustvar}.csv, comma replace;
-* Create new rows where jk-group had no observations;
-fillin agecat year $adjustvar;
-replace popsharejkt = 0 if _fillin==1;
-replace mearnjkt = 0 if _fillin==1;
-* Fill in jt-values of the following variables;
-local missvars uearnshare zeroed_uearnshare earnshare_1976 popsharejt;
-foreach missvar of local missvars {;
-	bysort agecat year: egen temp = min(`missvar');
-	replace `missvar' = temp if _fillin==1;
-	drop temp;
+* Create new rows where jk-group had no observations, throw error if new rows were created since mean earnings is missing;
+fillin agecat year ${adjustvar};
+count if _fillin == 1;
+matrix newcolumn = r(N)\_N;
+if ${iter}==1 & "${gender}"=="women" {;
+	matrix empty_cats = newcolumn;
 };
-* outsheet $adjustvar agecat year mearnjkt popsharejkt uearnshare _fillin using /Users/Brian/Desktop/after_fill_${adjustvar}.csv, comma replace;
+else {;
+	matrix empty_cats = empty_cats,newcolumn;
+};
+
+cd ${basedir}/stats/output/empty_cats;
+sort agecat $adjustvar year;
+outsheet agecat $adjustvar year if _fillin==1 using ${adjustvar}_${gender}.csv, comma replace;
 
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSITION;
