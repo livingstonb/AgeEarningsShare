@@ -142,7 +142,7 @@ forvalues k=1/6 {;
 clear;
 
 foreach adjustlab in local adjustlabels {;
-	local collabels `collabels' `adjustlab'_women `adjustlab'_men 
+	local collabels `collabels' `adjustlab'_women `adjustlab'_men; 
 };
 
 matrix colnames empty_cats = `collabels';
