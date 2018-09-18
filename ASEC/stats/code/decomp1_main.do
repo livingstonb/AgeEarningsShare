@@ -141,8 +141,9 @@ forvalues k=1/6 {;
 * Export matrix of # of empty categories per Z-variable;
 clear;
 
-foreach adjustlab in local adjustlabels {;
-	local collabels `collabels' `adjustlab'_women `adjustlab'_men; 
+local collabels;
+foreach adjustvar of local adjustvars {;
+	local collabels `collabels' `adjustvar'_women `adjustvar'_men ; 
 };
 
 matrix colnames empty_cats = `collabels';
