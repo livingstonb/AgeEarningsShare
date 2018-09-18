@@ -32,6 +32,7 @@ label values agecat agecatlabel;
 gen agec2 = 25 if (age>=25) & (age<=54);
 replace agec2 = 55 if (age>=55) & (age<.);
 label define agecatl2 25 "25-54 year olds" 55 "55+";
+label values agec2 agecatl2;
 
 * hours worked;
 gen hours = 0 if weeklyhours==0;
@@ -83,6 +84,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 * Plot unadjusted earnings shares;
 if 0 {;
 global timevar year;
+global agevar agecat;
 local genders women men;
 foreach gend of local genders {;
 	* Set gender for computations;
@@ -101,6 +103,7 @@ foreach gend of local genders {;
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Reset plot format if necessary;
 global timevar yr5;
+global agevar agec2;
 if "$timevar"=="yr5" {;
 global plot_options 
 		legend(cols(1))
