@@ -16,7 +16,7 @@ bysort ${timevar} ${agevar} $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 
 * Check sample size;
-drop if (${agevar}<.) & (${adjustvar}<.);
+keep if (${agevar}<.) & (${adjustvar}<.);
 count;
 matrix samplesize = samplesize,r(N);
 
@@ -94,8 +94,6 @@ by ${agevar}: gen interact_effect = sum(interactcomponent);
 
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
-set trace on;
-set tracedepth 2;
 * Loop over age groups;
 levelsof ${agevar}, local(agelabels);
 foreach i of local agelabels {;
