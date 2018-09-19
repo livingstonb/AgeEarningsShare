@@ -46,7 +46,7 @@ if "${adjustvar}"=="ems" {;
 	replace mearnjkt = L.mearnjkt if _fillin==1 & L.mearnjkt<.;
 	replace mearnjkt = F.mearnjkt if _fillin==1 & F.mearnjkt<.;
 	replace mearnjkt = (L.mearnjkt + F.mearnjkt)/2 if (_fillin==1) & (L.mearnjkt<.) & (F.mearnjkt<.);
-	by ${timevar} ${agevar} ${adjustvar}: egen true_uearnshare = max(uearnshare);
+	bysort ${timevar} ${agevar} ${adjustvar}: egen true_uearnshare = max(uearnshare);
 	by ${timevar} ${agevar} ${adjustvar}: replace uearnshare = true_uearnshare if _fillin==1;
 	drop true_uearnshare;
 };

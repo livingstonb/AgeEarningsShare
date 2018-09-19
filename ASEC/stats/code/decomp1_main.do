@@ -177,13 +177,13 @@ forvalues k=1/4 {;
 * Export matrix of # of empty categories per Z-variable;
 clear;
 
-local collabels blank;
+local collabels;
 foreach adjustvar of local adjustvars {;
 	local collabels `collabels' `adjustvar'_women `adjustvar'_men ; 
 };
 
-matrix colnames empty_cats = `collabels';
-matrix colnames samplesize = `collabels';
+matrix colnames empty_cats = blank `collabels';
+matrix colnames samplesize = blank `collabels';
 
 svmat empty_cats, names(col);
 drop blank;
