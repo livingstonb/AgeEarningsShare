@@ -128,9 +128,7 @@ local adjustvars
 	ones
 	college
 	hours
-	ems
-	emrs
-	emhri;
+	ems;
 local adjustlabels
 	Age
 	Education
@@ -142,7 +140,7 @@ matrix empty_cats = .\.;
 matrix samplesize= .;
 
 * Loop over Z-variables;
-forvalues k=1/6 {;
+forvalues k=1/4 {;
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 

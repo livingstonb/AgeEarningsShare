@@ -42,6 +42,7 @@ if "${adjustvar}"=="ems" {;
 	replace popsharejkt = 0 if _fillin==1;
 	/* First try replacing with lagged or future value. If both are present,
 	replace with average */;
+	tsset panelvar ${timevar};
 	replace mearnjkt = L.mearnjkt if _fillin==1 & L.mearnjkt<.;
 	replace mearnjkt = F.mearnjkt if _fillin==1 & F.mearnjkt<.;
 	replace mearnjkt = (L.mearnjkt + F.mearnjkt)/2 if (_fillin==1) & (L.mearnjkt<.) & (F.mearnjkt<.);
