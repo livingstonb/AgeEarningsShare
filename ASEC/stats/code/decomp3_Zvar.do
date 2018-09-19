@@ -16,7 +16,7 @@ bysort ${timevar} ${agevar} $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 
 * Check sample size;
-drop if (${agevar}<.) & (${adjustvar}<.);
+keep if (${agevar}<.) & (${adjustvar}<.);
 count;
 matrix samplesize = samplesize,r(N);
 

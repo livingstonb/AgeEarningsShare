@@ -56,6 +56,15 @@ outsheet using ${basedir}/build/output/ASEC.csv, comma nolabel replace;
 assert 0;
 };
 
+* Create variables;
+egen ems = group(college married services);
+* Variable of 1's, to do age-only decomposition;
+gen ones = 1;
+
+foreach var of varlist college hours ems {;
+	drop if `var' == .;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
 global plot_options 
@@ -79,6 +88,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
+if 0 {;
 global timevar year;
 global agevar agecat;
 local genders women men;
@@ -93,7 +103,7 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
 };
-
+};
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Declare time variable and age category variable;
@@ -113,13 +123,6 @@ global plot_options
 		scale(1.4);
 };
 
-* Create variables;
-egen ems = group(college married services);
-egen emrs = group(college married nonwhite race services);
-egen emhri = group(college married nonwhite race hours industry);
-* Variable of 1's, to do age-only decomposition;
-gen ones = 1;
-
 * Z-variables (to decompose by in addition to age shares of population);
 local adjustvars 
 	ones
@@ -132,9 +135,7 @@ local adjustlabels
 	Age
 	Education
 	Hours
-	Educ/Mar/Services
-	Educ/Mar/Race/Services
-	Educ/Mar/Hrs/Race/Ind;
+	Educ/Mar/Services;
 	
 * Initialize matrices to store sample sizes;
 matrix empty_cats = .\.;
