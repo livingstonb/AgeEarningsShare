@@ -20,8 +20,6 @@ keep if (${agevar}<.) & (${adjustvar}<.);
 count;
 matrix samplesize = samplesize,r(N);
 
-duplicates drop ${agevar} ${timevar} $adjustvar, force;
-
 * Create new rows where jk-group had no observations;
 fillin ${agevar} ${timevar} ${adjustvar};
 * Record number of missing categories and total categories;
@@ -29,15 +27,28 @@ count if _fillin == 1;
 matrix newcolumn = r(N)\_N;
 matrix empty_cats = empty_cats,newcolumn;
 
-
 cd ${basedir}/stats/output/empty_cats;
 sort ${agevar} $adjustvar ${timevar};
 outsheet ${agevar} $adjustvar ${timevar} if _fillin==1 using ${adjustvar}_${gender}.csv, comma replace;
 duplicates drop ${agevar} ${timevar} $adjustvar, force;
 
+
 ////////////////////////////////////////////////////////////////////////////////
 * DECOMPOSITION;
 egen panelvar = group(${agevar} $adjustvar);
+
+* Replace missing categories in ems with interpolated data from adjacent years;
+if "${adjustvar}"=="ems" {;
+	replace popsharejkt = 0 if _fillin==1;
+	/* First try replacing with lagged or future value. If both are present,
+	replace with average */;
+	replace mearnjkt = L.mearnjkt if _fillin==1 & L.mearnjkt<.;
+	replace mearnjkt = F.mearnjkt if _fillin==1 & F.mearnjkt<.;
+	replace mearnjkt = (L.mearnjkt + F.mearnjkt)/2 if (_fillin==1) & (L.mearnjkt<.) & (F.mearnjkt<.);
+	by ${timevar} ${agevar} ${adjustvar}: egen true_uearnshare = max(uearnshare);
+	by ${timevar} ${agevar} ${adjustvar}: replace uearnshare = true_uearnshare if _fillin==1;
+	drop true_uearnshare;
+};
 
 /* Compute lagged earnings via formula to check for error against actual
 lagged earnings -- will be exported to csv */;
