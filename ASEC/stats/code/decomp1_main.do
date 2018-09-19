@@ -88,7 +88,7 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-if 0 {;
+
 global timevar year;
 global agevar agecat;
 local genders women men;
@@ -103,7 +103,7 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
 };
-};
+
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
 * Declare time variable and age category variable;
