@@ -63,14 +63,14 @@ replace industry = 9 if ind90ly>=761 & ind90ly<=791;
 replace industry = 10 if ind90ly>=800 & ind90ly<=810;
 replace industry = 11 if ind90ly>=812 & ind90ly<=893;
 replace industry = 12 if ind90ly>=900 & ind90ly<=932;
-replace industry = 0 if industry == .; /* unemployed workers */;
+replace industry = -1 if uhrsworkly == 0;
 
 * service industry;
-gen services = 1 if industry>=5;
+gen services = 1 if (industry>=5) & (industry<.);
 * agriculture, forestry, and fisheries, mining, construction, manufacturing;
-replace services = 0 if (industry>0) & (industry<5);
+replace services = 0 if (industry>=1) & (industry<5);
 * unemployed workers;
-replace services = -1 if industry == 0;
+replace services = -1 if industry == -1;
 
 gen totalhours = uhrsworkly*wkswork1;
 gen weeklyhours = totalhours/52;

@@ -56,9 +56,6 @@ outsheet using ${basedir}/build/output/ASEC.csv, comma nolabel replace;
 assert 0;
 };
 
-* Choose whether to use 2 or 6 age categories;
-global num_agecats = 6;
-
 ////////////////////////////////////////////////////////////////////////////////
 * SET PLOT FORMAT;
 global plot_options 
@@ -82,7 +79,6 @@ global line6 lwidth(${linethickness}) lpattern(shortdash);
 
 ////////////////////////////////////////////////////////////////////////////////
 * Plot unadjusted earnings shares;
-if 0 {;
 global timevar year;
 global agevar agecat;
 local genders women men;
@@ -97,13 +93,13 @@ foreach gend of local genders {;
 	do ${basedir}/stats/code/decomp2_plotunadjusted.do;
 	restore;
 };
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 * COMPUTE AND PLOT OTHER DECOMPOSITIONS;
-* Reset plot format if necessary;
-global timevar yr5;
-global agevar agec2;
+* Declare time variable and age category variable;
+global timevar year;
+global agevar agecat;
+* Reset xlabel for plots if necessary;
 if "$timevar"=="yr5" {;
 global plot_options 
 		legend(cols(1))
@@ -139,10 +135,13 @@ local adjustlabels
 	Educ/Mar/Services
 	Educ/Mar/Race/Services
 	Educ/Mar/Hrs/Race/Ind;
+	
+* Initialize matrices to store sample sizes;
+matrix empty_cats = .\.;
+matrix samplesize= .;
 
 * Loop over Z-variables;
 forvalues k=1/6 {;
-	global iter `k';
 	global adjustvar : word `k' of `adjustvars';
 	global adjustlabel : word `k' of `adjustlabels';
 
@@ -179,14 +178,24 @@ forvalues k=1/6 {;
 * Export matrix of # of empty categories per Z-variable;
 clear;
 
-local collabels;
+local collabels blank;
 foreach adjustvar of local adjustvars {;
 	local collabels `collabels' `adjustvar'_women `adjustvar'_men ; 
 };
 
 matrix colnames empty_cats = `collabels';
+matrix colnames samplesize = `collabels';
+
 svmat empty_cats, names(col);
+drop blank;
 gen quantity = "Num empty" if _n==1;
 replace quantity = "Num total" if _n==2;
 order quantity;
 outsheet using ${basedir}/stats/output/empty_cats.csv, comma replace;
+
+clear;
+svmat samplesize, names(col);
+drop blank;
+gen quantity = "N";
+order quantity;
+outsheet using ${basedir}/stats/output/samplesize.csv, comma replace;

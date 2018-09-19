@@ -15,18 +15,20 @@ gen popsharejkt = popjkt/popt;
 bysort ${timevar} ${agevar} $adjustvar: egen earnjkt = sum(asecwt*incwage);
 gen mearnjkt	= earnjkt/popjkt;
 
+* Check sample size;
+drop if (${agevar}<.) & (${adjustvar}<.);
+count;
+matrix samplesize = samplesize,r(N);
+
 duplicates drop ${agevar} ${timevar} $adjustvar, force;
 
 * Create new rows where jk-group had no observations;
 fillin ${agevar} ${timevar} ${adjustvar};
+* Record number of missing categories and total categories;
 count if _fillin == 1;
 matrix newcolumn = r(N)\_N;
-if ${iter}==1 & "${gender}"=="women" {;
-	matrix empty_cats = newcolumn;
-};
-else {;
-	matrix empty_cats = empty_cats,newcolumn;
-};
+matrix empty_cats = empty_cats,newcolumn;
+
 
 cd ${basedir}/stats/output/empty_cats;
 sort ${agevar} $adjustvar ${timevar};
