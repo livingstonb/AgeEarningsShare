@@ -104,6 +104,8 @@ bysort ${agevar} (${timevar}): gen composition_effect = sum(compositional);
 by ${agevar}: gen struct_effect = sum(structural);
 by ${agevar}: gen interact_effect = sum(interactcomponent);
 
+* Create counterfactual variable;
+gen counterfactual = earnshare_1976 + struct_effect + interact_effect;
 ////////////////////////////////////////////////////////////////////////////////
 * PLOTS FOR DECOMPOSITION;
 * Loop over age groups;
@@ -124,6 +126,7 @@ foreach i of local agelabels {;
 	graph export ${adjustvar}_`i'_${gender}.png, replace;
 };
 
+
 /* For checking error in unadjusted earnshare estimate, compare true unadjusted
 shares with lagged shares computed with identity */;
 cap mkdir ${basedir}/stats/output/error;
@@ -132,6 +135,6 @@ outsheet ${agevar} ${timevar} Luearnshare uearnshare using ${adjustvar}_${gender
 
 * export data for plotting elsewhere;
 sort ${timevar} ${agevar};
-keep ${timevar} ${agevar}  composition_effect struct_effect interact_effect zeroed_uearnshare uearnshare;
+keep ${timevar} ${agevar}  composition_effect struct_effect interact_effect zeroed_uearnshare uearnshare counterfactual;
 cd ${basedir}/stats/output/plot_data;
 outsheet using ${adjustvar}_${gender}.csv, comma replace;

@@ -6,7 +6,7 @@ import sys
 
 ## Plots decomposition data from output/plot_data
 
-basedir = '/Users/brianlivingston/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
+basedir = '/Users/Brian/Documents/GitHub/AgeEarningsShare/ASEC/stats/output'
 # Directory of csv's
 datadir = basedir + '/plot_data'
 # Output directory for p lots
@@ -43,6 +43,35 @@ ax.legend(bbox_to_anchor=(0.48,-0.13),ncol=2,handlelength=3)
 plt.subplots_adjust(bottom=0.26,top=0.95,right=0.97,wspace=0.3,left=0.05)
 
 plotpath = plotdir + '/unadjusted.png'
+plt.savefig(plotpath)
+
+########################################################################
+# Counterfactual shares plots
+dashlist = [(1,5),(3,3,1,3),(3,5),(8,4,1,4),(8,4),(1,0)]
+subplotlist = [121,122]
+titles = ['Men','Women']
+fig = plt.figure(figsize=(8,5))
+for count,gender in enumerate(genders):
+	filepath = datadir + '/ems_' + gender + '.csv'
+	df = pd.read_csv(filepath,header=0,index_col=['agecat','year'])
+	ax = fig.add_subplot(subplotlist[count])
+	
+	j = 0
+	for name, group in df.groupby('agecat'):
+		group = group.reset_index()
+		ax.plot(group['year'],group['counterfactual'],label=name,dashes=dashlist[j])
+		j = j + 1
+	ax.set_xlim(1976,2017)
+	ax.set_xticks(np.arange(1976,2017,10))
+	ax.set_yticks([0,0.1,0.2,0.3])
+	ax.set_ylim(0,0.35)
+	ax.set_xlabel('Year')
+	ax.set_title(titles[count])
+	
+ax.legend(bbox_to_anchor=(0.48,-0.13),ncol=2,handlelength=3)	
+plt.subplots_adjust(bottom=0.26,top=0.95,right=0.97,wspace=0.3,left=0.05)
+
+plotpath = plotdir + '/counterfactuals.png'
 plt.savefig(plotpath)
 
 ########################################################################
